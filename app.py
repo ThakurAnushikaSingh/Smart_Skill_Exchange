@@ -137,20 +137,13 @@ def request_skill():
     learner_id = int(session['user_id'])
     session_id = int(data['session_id'])
 
-    existing = supabase.table("bookings") \
-        .select("*") \
-        .eq("session_id", session_id) \
-        .in_("status", ["Pending", "Accepted"]) \
-        .execute()
-
-    if existing.data:
-        return "This session already has an active request. Please choose another one."
-
-    supabase.table("bookings").insert({
-        "session_id": session_id,
-        "learner_id": learner_id,
-        "status": "Pending"
-    }).execute()
+    try:
+        supabase.rpc("create_booking_request", {
+            "p_session_id": session_id,
+            "p_learner_id": learner_id
+        }).execute()
+    except Exception as exc:
+        return f"Unable to create booking request: {exc}"
 
     return redirect(url_for('view_sessions'))
 
@@ -192,30 +185,15 @@ def accept_request(booking_id):
         return redirect(url_for('home'))
 
     meeting_url = request.form.get('meeting_url', '').strip()
-    if not meeting_url:
-        return "Meeting URL is required."
 
-    booking_res = supabase.table("bookings").select("*").eq("booking_id", booking_id).execute()
-    if not booking_res.data:
-        return "Booking not found."
-
-    booking = booking_res.data[0]
-    session_id = booking.get("session_id")
-
-    sess_res = supabase.table("sessions").select("*").eq("session_id", session_id).execute()
-    if not sess_res.data:
-        return "Session not found."
-
-    sess = sess_res.data[0]
-    if sess.get("teacher_id") != session['user_id']:
-        return "You are not allowed to accept this request."
-
-    supabase.table("bookings").update({"status": "Accepted"}).eq("booking_id", booking_id).execute()
-    supabase.table("sessions").update({
-        "learner_id": booking.get("learner_id"),
-        "meeting_url": meeting_url,
-        "booking_status": "Accepted"
-    }).eq("session_id", session_id).execute()
+    try:
+        supabase.rpc("accept_booking_request", {
+            "p_booking_id": booking_id,
+            "p_teacher_id": int(session['user_id']),
+            "p_meeting_url": meeting_url
+        }).execute()
+    except Exception as exc:
+        return f"Unable to accept request: {exc}"
 
     return redirect(url_for('view_sessions'))
 
@@ -225,20 +203,14 @@ def reject_request(booking_id):
     if 'user_id' not in session:
         return redirect(url_for('home'))
 
-    booking_res = supabase.table("bookings").select("*").eq("booking_id", booking_id).execute()
-    if not booking_res.data:
-        return "Booking not found."
+    try:
+        supabase.rpc("reject_booking_request", {
+            "p_booking_id": booking_id,
+            "p_teacher_id": int(session['user_id'])
+        }).execute()
+    except Exception as exc:
+        return f"Unable to reject request: {exc}"
 
-    booking = booking_res.data[0]
-    sess_res = supabase.table("sessions").select("*").eq("session_id", booking.get("session_id")).execute()
-    if not sess_res.data:
-        return "Session not found."
-
-    sess = sess_res.data[0]
-    if sess.get("teacher_id") != session['user_id']:
-        return "You are not allowed to reject this request."
-
-    supabase.table("bookings").update({"status": "Rejected"}).eq("booking_id", booking_id).execute()
     return redirect(url_for('manage_requests'))
 
 
@@ -291,7 +263,6 @@ def learn(session_id):
 
     s = current_session[0]
 
-    # Allow join only if session is assigned and accepted
     if not s.get("meeting_url"):
         return "Meeting link will be available once the teacher accepts the request."
 
@@ -377,51 +348,16 @@ def complete_session():
     skill_id = int(data['skill_id'])
     credits = int(data['credits'])
 
-    cert = supabase.table("certifications") \
-        .select("*") \
-        .eq("user_id", trainer_id) \
-        .eq("skill_id", skill_id) \
-        .eq("role", "TRAINER") \
-        .execute()
-
-    if not cert.data:
-        return "Trainer is not certified ❌"
-
-    supabase.table("bookings") \
-        .update({"status": "Completed"}) \
-        .eq("session_id", session_id) \
-        .execute()
-
-    supabase.table("transactions").insert({
-        "session_id": session_id,
-        "learner_id": learner_id,
-        "trainer_id": trainer_id,
-        "credits_transferred": credits
-    }).execute()
-
-    learner = supabase.table("users").select("credits").eq("user_id", learner_id).execute().data[0]
-    trainer = supabase.table("users").select("credits").eq("user_id", trainer_id).execute().data[0]
-
-    supabase.table("users").update({
-        "credits": learner["credits"] - credits
-    }).eq("user_id", learner_id).execute()
-
-    supabase.table("users").update({
-        "credits": trainer["credits"] + credits
-    }).eq("user_id", trainer_id).execute()
-
-    existing = supabase.table("certifications") \
-        .select("*") \
-        .eq("user_id", learner_id) \
-        .eq("skill_id", skill_id) \
-        .execute()
-
-    if not existing.data:
-        supabase.table("certifications").insert({
-            "user_id": learner_id,
-            "skill_id": skill_id,
-            "role": "LEARNER"
+    try:
+        supabase.rpc("complete_session_atomic", {
+            "p_session_id": session_id,
+            "p_learner_id": learner_id,
+            "p_trainer_id": trainer_id,
+            "p_skill_id": skill_id,
+            "p_credits": credits
         }).execute()
+    except Exception as exc:
+        return f"Unable to complete session: {exc}"
 
     return redirect(url_for('home'))
 
