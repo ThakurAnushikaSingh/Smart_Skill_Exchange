@@ -3,12 +3,25 @@ from supabase import create_client, Client
 
 # 🔐 Supabase Config
 url = "https://qftsuqmhwnfqzudmhfee.supabase.co"
-key = "sb_publishable_X0N493XXYH7z0b9mYKGrkw_6CD0PeJm" 
+key = "sb_publishable_X0N493XXYH7z0b9mYKGrkw_6CD0PeJm"
 
 supabase: Client = create_client(url, key)
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
+
+
+# -------------------- HELPERS --------------------
+
+def _user_map():
+    users = supabase.table("users").select("*").execute().data or []
+    return {u["user_id"]: u for u in users}
+
+
+def _skill_map():
+    skills = supabase.table("skills").select("*").execute().data or []
+    return {s["skill_id"]: s for s in skills}
+
 
 # -------------------- PAGES --------------------
 
@@ -16,18 +29,32 @@ app.secret_key = "supersecretkey"
 def home():
     return render_template("index.html")
 
+
 @app.route('/add-skill')
 def add_skill_page():
     return render_template("add_skill.html")
 
+
 @app.route('/request-skill')
 def request_skill_page():
-    return render_template("request_skill.html")
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    sessions_data = supabase.table("sessions").select("*").execute().data or []
+    available_sessions = [s for s in sessions_data if not s.get("learner_id")]
+
+    return render_template(
+        "request_skill.html",
+        sessions_data=available_sessions,
+        current_user_id=session['user_id']
+    )
+
 
 @app.route('/complete-session-page')
 def complete_session_page():
     return render_template("complete_session.html")
-    
+
+
 @app.route('/certificates')
 def certificates():
     if 'user_id' not in session:
@@ -40,10 +67,11 @@ def certificates():
         .eq("user_id", user_id) \
         .execute()
 
-    certs = res.data
+    certs = res.data or []
 
     return render_template("certificates.html", certs=certs)
-    
+
+
 # -------------------- USERS --------------------
 
 @app.route("/users", methods=["POST"])
@@ -63,6 +91,7 @@ def get_users():
     res = supabase.table("users").select("*").execute()
     return jsonify(res.data)
 
+
 # -------------------- SKILLS --------------------
 
 @app.route('/skills', methods=['POST'])
@@ -81,6 +110,7 @@ def get_skills():
     res = supabase.table("skills").select("*").execute()
     return jsonify(res.data)
 
+
 # -------------------- USER SKILLS --------------------
 
 @app.route("/user-skills", methods=["POST"])
@@ -95,20 +125,178 @@ def map_user_skill():
 
     return jsonify(res.data)
 
+
+# -------------------- BOOKING / REQUEST FLOW --------------------
+
+@app.route('/request_skill', methods=['POST'])
+def request_skill():
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    data = request.form if request.form else request.json
+    learner_id = int(session['user_id'])
+    session_id = int(data['session_id'])
+
+    existing = supabase.table("bookings") \
+        .select("*") \
+        .eq("session_id", session_id) \
+        .in_("status", ["Pending", "Accepted"]) \
+        .execute()
+
+    if existing.data:
+        return "This session already has an active request. Please choose another one."
+
+    supabase.table("bookings").insert({
+        "session_id": session_id,
+        "learner_id": learner_id,
+        "status": "Pending"
+    }).execute()
+
+    return redirect(url_for('view_sessions'))
+
+
+@app.route('/manage-requests')
+def manage_requests():
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    teacher_id = session['user_id']
+    sessions_data = supabase.table("sessions").select("*").eq("teacher_id", teacher_id).execute().data or []
+    bookings = supabase.table("bookings").select("*").eq("status", "Pending").execute().data or []
+    users = _user_map()
+    skills = _skill_map()
+
+    session_by_id = {s['session_id']: s for s in sessions_data}
+
+    incoming = []
+    for b in bookings:
+        current_session = session_by_id.get(b.get("session_id"))
+        if not current_session:
+            continue
+        incoming.append({
+            "booking_id": b.get("booking_id"),
+            "session_id": current_session.get("session_id"),
+            "learner_id": b.get("learner_id"),
+            "learner_name": users.get(b.get("learner_id"), {}).get("name", "Unknown Learner"),
+            "skill_name": skills.get(current_session.get("skill_id"), {}).get("skill_name", current_session.get("skill_name", "Skill")),
+            "session_date": current_session.get("session_date"),
+            "session_time": current_session.get("session_time")
+        })
+
+    return render_template("manage_requests.html", incoming=incoming)
+
+
+@app.route('/bookings/<int:booking_id>/accept', methods=['POST'])
+def accept_request(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    meeting_url = request.form.get('meeting_url', '').strip()
+    if not meeting_url:
+        return "Meeting URL is required."
+
+    booking_res = supabase.table("bookings").select("*").eq("booking_id", booking_id).execute()
+    if not booking_res.data:
+        return "Booking not found."
+
+    booking = booking_res.data[0]
+    session_id = booking.get("session_id")
+
+    sess_res = supabase.table("sessions").select("*").eq("session_id", session_id).execute()
+    if not sess_res.data:
+        return "Session not found."
+
+    sess = sess_res.data[0]
+    if sess.get("teacher_id") != session['user_id']:
+        return "You are not allowed to accept this request."
+
+    supabase.table("bookings").update({"status": "Accepted"}).eq("booking_id", booking_id).execute()
+    supabase.table("sessions").update({
+        "learner_id": booking.get("learner_id"),
+        "meeting_url": meeting_url,
+        "booking_status": "Accepted"
+    }).eq("session_id", session_id).execute()
+
+    return redirect(url_for('view_sessions'))
+
+
+@app.route('/bookings/<int:booking_id>/reject', methods=['POST'])
+def reject_request(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    booking_res = supabase.table("bookings").select("*").eq("booking_id", booking_id).execute()
+    if not booking_res.data:
+        return "Booking not found."
+
+    booking = booking_res.data[0]
+    sess_res = supabase.table("sessions").select("*").eq("session_id", booking.get("session_id")).execute()
+    if not sess_res.data:
+        return "Session not found."
+
+    sess = sess_res.data[0]
+    if sess.get("teacher_id") != session['user_id']:
+        return "You are not allowed to reject this request."
+
+    supabase.table("bookings").update({"status": "Rejected"}).eq("booking_id", booking_id).execute()
+    return redirect(url_for('manage_requests'))
+
+
 # -------------------- SESSIONS VIEW --------------------
 
 @app.route('/sessions')
 def view_sessions():
-    sessions = supabase.table("sessions").select("*").execute().data
-    users = supabase.table("users").select("*").execute().data
-    skills = supabase.table("skills").select("*").execute().data
-    bookings = supabase.table("bookings").select("*").execute().data
+    sessions = supabase.table("sessions").select("*").execute().data or []
+    users = _user_map()
+    skills = _skill_map()
+    bookings = supabase.table("bookings").select("*").execute().data or []
 
-    return render_template("sessions.html",
-                           sessions=sessions,
-                           users=users,
-                           skills=skills,
-                           bookings=bookings)
+    accepted_booking_by_session = {
+        b.get("session_id"): b
+        for b in bookings
+        if b.get("status") == "Accepted"
+    }
+
+    enriched = []
+    for s in sessions:
+        accepted = accepted_booking_by_session.get(s.get("session_id"))
+        learner_id = s.get("learner_id") or (accepted or {}).get("learner_id")
+        teacher = users.get(s.get("teacher_id"), {})
+        learner = users.get(learner_id, {}) if learner_id else {}
+        skill = skills.get(s.get("skill_id"), {})
+        enriched.append({
+            **s,
+            "teacher_name": s.get("teacher_name") or teacher.get("name", "Unknown Teacher"),
+            "learner_name": s.get("learner_name") or learner.get("name"),
+            "skill_name": s.get("skill_name") or skill.get("skill_name", "Skill"),
+            "booking_status": s.get("booking_status") or (accepted or {}).get("status"),
+            "meeting_url": s.get("meeting_url"),
+        })
+
+    return render_template(
+        "sessions.html",
+        sessions=enriched,
+        current_user_id=session.get('user_id')
+    )
+
+
+@app.route('/learn/<int:session_id>')
+def learn(session_id):
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    current_session = supabase.table("sessions").select("*").eq("session_id", session_id).execute().data
+    if not current_session:
+        return "Session not found."
+
+    s = current_session[0]
+
+    # Allow join only if session is assigned and accepted
+    if not s.get("meeting_url"):
+        return "Meeting link will be available once the teacher accepts the request."
+
+    return render_template("learn.html", session_data=s, current_user_id=session['user_id'])
+
 
 # -------------------- LOGIN --------------------
 
@@ -128,8 +316,8 @@ def login():
         session['user_id'] = user['user_id']
         session['name'] = user['name']
         return redirect(url_for('home'))
-    else:
-        return "Invalid credentials ❌"
+    return "Invalid credentials ❌"
+
 
 # -------------------- LOGOUT --------------------
 
@@ -137,6 +325,7 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('home'))
+
 
 # -------------------- PROFILE --------------------
 
@@ -155,6 +344,7 @@ def profile():
     user = res.data[0]
     return render_template("profile.html", user=user)
 
+
 # -------------------- TRANSACTIONS --------------------
 
 @app.route('/transactions')
@@ -171,11 +361,11 @@ def transactions():
 
     return render_template("transactions.html", data=res.data)
 
+
 # -------------------- COMPLETE SESSION --------------------
 
 @app.route('/complete_session', methods=['POST'])
 def complete_session():
-
     if 'user_id' not in session:
         return redirect(url_for('home'))
 
@@ -187,7 +377,6 @@ def complete_session():
     skill_id = int(data['skill_id'])
     credits = int(data['credits'])
 
-    # 1️⃣ Check trainer certification
     cert = supabase.table("certifications") \
         .select("*") \
         .eq("user_id", trainer_id) \
@@ -198,13 +387,11 @@ def complete_session():
     if not cert.data:
         return "Trainer is not certified ❌"
 
-    # 2️⃣ Update booking status
     supabase.table("bookings") \
         .update({"status": "Completed"}) \
         .eq("session_id", session_id) \
         .execute()
 
-    # 3️⃣ Insert transaction
     supabase.table("transactions").insert({
         "session_id": session_id,
         "learner_id": learner_id,
@@ -212,8 +399,6 @@ def complete_session():
         "credits_transferred": credits
     }).execute()
 
-    # 4️⃣ Update credits manually
-    # learner - credits
     learner = supabase.table("users").select("credits").eq("user_id", learner_id).execute().data[0]
     trainer = supabase.table("users").select("credits").eq("user_id", trainer_id).execute().data[0]
 
@@ -225,7 +410,6 @@ def complete_session():
         "credits": trainer["credits"] + credits
     }).eq("user_id", trainer_id).execute()
 
-    # 5️⃣ Add certification if not exists
     existing = supabase.table("certifications") \
         .select("*") \
         .eq("user_id", learner_id) \
@@ -241,12 +425,14 @@ def complete_session():
 
     return redirect(url_for('home'))
 
+
 # -------------------- CACHE FIX --------------------
 
 @app.after_request
 def add_header(response):
     response.headers['Cache-Control'] = 'no-store'
     return response
+
 
 # -------------------- RUN --------------------
 

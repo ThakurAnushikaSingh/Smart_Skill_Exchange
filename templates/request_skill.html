@@ -3,66 +3,106 @@
 <head>
     <title>Request Skill</title>
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f6f8;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            color: #1e293b;
+        }
 
-    .card {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        width: 350px;
-        text-align: center;
-    }
+        .wrapper {
+            max-width: 920px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 24px;
+        }
 
-    input {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-    }
+        h2 {
+            margin-top: 0;
+            color: #4338ca;
+        }
 
-    button {
-        padding: 10px;
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+        }
 
-    button:hover {
-        background-color: #45a049;
-    }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
 
-    a {
-        display: block;
-        margin-top: 10px;
-        text-decoration: none;
-        color: #4CAF50;
-    }
-	</style>
+        th {
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+        }
+
+        .back {
+            margin-top: 18px;
+            display: inline-block;
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .empty {
+            margin: 12px 0;
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
 </head>
-
 <body>
+<div class="wrapper">
+    <h2>📩 Request a Session</h2>
+    <p>Choose any available session and send your request to the teacher.</p>
 
-<div class="card">
-    <h2>📩 Request Skill</h2>
+    {% if sessions_data %}
+    <table>
+        <tr>
+            <th>Session</th>
+            <th>Skill</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Action</th>
+        </tr>
+        {% for s in sessions_data %}
+        <tr>
+            <td>#{{ s.session_id }}</td>
+            <td>{{ s.skill_name or ('Skill #' ~ s.skill_id) }}</td>
+            <td>{{ s.session_date or '-' }}</td>
+            <td>{{ s.session_time or '-' }}</td>
+            <td>
+                <form method="POST" action="/request_skill">
+                    <input type="hidden" name="session_id" value="{{ s.session_id }}">
+                    <button class="btn" type="submit">Request</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p class="empty">No available sessions right now. Please check again later.</p>
+    {% endif %}
 
-    <form method="POST" action="/request_skill">
-        <input type="number" name="requester_id" placeholder="Your User ID" required>
-        <input type="number" name="skill_id" placeholder="Skill ID" required>
-        <button type="submit">Request</button>
-    </form>
-
-    <a href="/">⬅ Back</a>
+    <a class="back" href="/">⬅ Back to Home</a>
 </div>
-
 </body>
 </html>
