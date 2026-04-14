@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sessions</title>
+</head>
+<body>
+
+<h1>📚 Active Sessions</h1>
+
+<table border="1" cellpadding="10">
+<tr>
+    <th>Session ID</th>
+    <th>Skill</th>
+    <th>Teacher</th>
+    <th>Learner</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+{% for s in sessions %}
+<tr>
+    <td>{{ s.session_id }}</td>
+    <td>{{ s.skill_name }}</td>
+    <td>{{ s.teacher_name }}</td>
+
+    <!-- 👤 Learner -->
+    <td>
+        {% if s.learner_name %}
+            {{ s.learner_name }}
+        {% else %}
+            <span style="color:gray;">Available</span>
+        {% endif %}
+    </td>
+
+    <!-- 📅 Date -->
+    <td>{{ s.session_date }}</td>
+
+    <!-- ⏰ Time -->
+    <td>{{ s.session_time }}</td>
+
+    <!-- 📊 Status -->
+    <td>
+        {% if s.booking_status %}
+            <span style="color:green;">{{ s.booking_status }}</span>
+        {% else %}
+            <span style="color:orange;">Available</span>
+        {% endif %}
+    </td>
+
+    <!-- 🎯 ACTION BUTTONS -->
+    <td>
+
+        <!-- 🎥 JOIN -->
+        <a href="/learn/{{ s.session_id }}">
+            <button>🎥 Join</button>
+        </a>
+
+        <!-- ✅ COMPLETE -->
+        {% if s.learner_name %}
+        <form method="POST" action="/complete_session" style="margin-top:5px;">
+            <input type="hidden" name="session_id" value="{{ s.session_id }}">
+            <input type="hidden" name="learner_id" value="{{ s.learner_id }}">
+            <input type="hidden" name="trainer_id" value="{{ s.teacher_id }}">
+            <input type="hidden" name="skill_id" value="{{ s.skill_id }}">
+            <input type="hidden" name="credits" value="{{ s.credits_required }}">
+            <button type="submit">✅ Complete</button>
+        </form>
+        {% endif %}
+
+    </td>
+
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="/">⬅ Back</a>
+
+</body>
+</html>
