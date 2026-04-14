@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Requests</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f8fafc; }
+        .wrapper {
+            max-width: 980px;
+            margin: 34px auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+        }
+        h1 { margin-top: 0; color: #4338ca; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 11px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        th { background: #f8fafc; }
+        input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 6px;
+        }
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 11px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .accept { background: #16a34a; }
+        .reject { background: #dc2626; }
+        .back { display: inline-block; margin-top: 18px; color: #4f46e5; text-decoration: none; }
+        .empty { color: #64748b; font-style: italic; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <h1>📥 Manage Incoming Requests</h1>
+
+    {% if incoming %}
+    <table>
+        <tr>
+            <th>Session</th>
+            <th>Skill</th>
+            <th>Learner</th>
+            <th>Date & Time</th>
+            <th>Decision</th>
+        </tr>
+        {% for r in incoming %}
+        <tr>
+            <td>#{{ r.session_id }}</td>
+            <td>{{ r.skill_name }}</td>
+            <td>{{ r.learner_name }} (#{{ r.learner_id }})</td>
+            <td>{{ r.session_date or '-' }} {{ r.session_time or '' }}</td>
+            <td>
+                <form method="POST" action="/bookings/{{ r.booking_id }}/accept">
+                    <input type="url" name="meeting_url" placeholder="https://meet.google.com/your-link" required>
+                    <button type="submit" class="btn accept">Accept + Add URL</button>
+                </form>
+                <form method="POST" action="/bookings/{{ r.booking_id }}/reject">
+                    <button type="submit" class="btn reject">Reject</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p class="empty">No pending requests right now.</p>
+    {% endif %}
+
+    <a class="back" href="/">⬅ Back to Home</a>
+</div>
+</body>
+</html>
