@@ -23,6 +23,15 @@ def _skill_map():
     return {s["skill_id"]: s for s in skills}
 
 
+def _to_int(value, field_name):
+    if value is None:
+        raise ValueError(f"{field_name} is required")
+    value_str = str(value).strip()
+    if value_str == "":
+        raise ValueError(f"{field_name} is required")
+    return int(value_str)
+
+
 # -------------------- PAGES --------------------
 
 @app.route("/")
@@ -238,6 +247,7 @@ def view_sessions():
         skill = skills.get(s.get("skill_id"), {})
         enriched.append({
             **s,
+            "learner_id": learner_id,
             "teacher_name": s.get("teacher_name") or teacher.get("name", "Unknown Teacher"),
             "learner_name": s.get("learner_name") or learner.get("name"),
             "skill_name": s.get("skill_name") or skill.get("skill_name", "Skill"),
@@ -342,11 +352,14 @@ def complete_session():
 
     data = request.form if request.form else request.json
 
-    session_id = int(data['session_id'])
-    learner_id = int(data['learner_id'])
-    trainer_id = int(data['trainer_id'])
-    skill_id = int(data['skill_id'])
-    credits = int(data['credits'])
+    try:
+        session_id = _to_int(data.get('session_id'), 'session_id')
+        learner_id = _to_int(data.get('learner_id'), 'learner_id')
+        trainer_id = _to_int(data.get('trainer_id'), 'trainer_id')
+        skill_id = _to_int(data.get('skill_id'), 'skill_id')
+        credits = _to_int(data.get('credits'), 'credits')
+    except ValueError as exc:
+        return f"Invalid input: {exc}"
 
     try:
         supabase.rpc("complete_session_atomic", {
