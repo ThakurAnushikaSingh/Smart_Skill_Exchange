@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Session</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        width: 350px;
+        text-align: center;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    button {
+        padding: 10px;
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    a {
+        display: block;
+        margin-top: 10px;
+        text-decoration: none;
+        color: #4CAF50;
+    }
+	</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>🎯 Complete Session</h2>
+
+    <form method="POST" action="/complete_session">
+        <input type="number" name="session_id" placeholder="Session ID" required>
+        <input type="number" name="learner_id" placeholder="Learner ID" required>
+        <input type="number" name="trainer_id" placeholder="Trainer ID" required>
+        <input type="number" name="skill_id" placeholder="Skill ID" required>
+        <input type="number" name="credits" placeholder="Credits" required>
+        <button type="submit">Complete</button>
+    </form>
+
+    <a href="/">⬅ Back</a>
+</div>
+
+</body>
+</html>
