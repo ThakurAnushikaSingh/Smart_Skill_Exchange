@@ -1,5 +1,17 @@
-<div class="success">
-  ✅ Skill added successfully!
-</div>
+{% extends "base.html" %}
 
-<a href="/skills" class="btn">View Skills</a>
+{% block content %}
+<div class="profile-wrapper">
+  <div class="profile-card success-card">
+    <div class="success-icon">✅</div>
+    <h2>Skill Added Successfully</h2>
+    <p><strong>{{ skill_name }}</strong> is now listed in your exchange catalog.</p>
+
+    <div class="actions">
+      <a href="/skills" class="btn btn-primary">View Skills</a>
+      <a href="/add-skill" class="btn btn-outline">Add Another Skill</a>
+      <a href="/profile" class="btn btn-secondary">Go to Profile</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
