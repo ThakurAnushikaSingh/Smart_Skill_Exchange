@@ -8,6 +8,7 @@ from routes.skill_routes import skill_bp
 from routes.exchange_routes import exchange_bp
 
 
+
 def create_app():
     app = Flask(__name__)
 
