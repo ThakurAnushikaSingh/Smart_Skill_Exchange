@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search-wrapper">
+  <div class="search-container">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-bar" placeholder="Search skills...">
+  </div>
+</div>
+
+<div class="skills-page">
+
+  <div class="skills-header">
+    <h1>Explore Skills 🚀</h1>
+    <p>Find something new to learn or exchange</p>
+  </div>
+
+  <div class="skills-grid">
+    {% for skill in skills %}
+    <div class="skill-card">
+      
+      <div class="skill-content">
+        <h3>{{ skill.name }}</h3>
+        <p>{{ skill.description }}</p>
+      </div>
+
+      <div class="skill-footer">
+        <button class="btn-primary">Request</button>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}

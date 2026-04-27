@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard">
+
+  <!-- HERO / WELCOME -->
+  <div class="welcome-card">
+    <h1>Welcome, {{ user.name }} 👋</h1>
+    <p>Ready to learn something new or share your skills today?</p>
+
+    <div class="actions">
+      <a href="/skills" class="btn-primary">Browse Skills</a>
+      <a href="/add-skill" class="btn-secondary">Add Skill</a>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div class="quick-grid">
+
+    <div class="card">
+      <h3>📚 Your Skills</h3>
+      <p>Manage what you offer or want to learn</p>
+      <a href="/profile" class="link">View Profile →</a>
+    </div>
+
+    <div class="card">
+      <h3>🤝 Exchanges</h3>
+      <p>Track your learning sessions</p>
+      <a href="#" class="link">Coming Soon</a>
+    </div>
+
+    <div class="card">
+      <h3>⭐ Progress</h3>
+      <p>See your growth & achievements</p>
+      <a href="#" class="link">Coming Soon</a>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,81 +1,49 @@
-<head>
-    <title>Smart Skill Exchange</title>
+{% extends "base.html" %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-        }
+{% block content %}
 
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 400px;
-            text-align: center;
-        }
+<div class="profile-wrapper">
 
-        h1 {
-            margin-bottom: 20px;
-        }
+  <div class="profile-card">
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    <!-- TOP SECTION -->
+    <div class="profile-header">
+      <div class="avatar">
+        {{ user.name[0] }}
+      </div>
 
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
+      <div>
+        <h2>{{ user.name }}</h2>
+        <p class="email">{{ user.email }}</p>
+      </div>
+    </div>
 
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
+    <!-- BIO -->
+    <div class="profile-section">
+      <h3>About</h3>
+      <p>{{ user.bio or "No bio added yet." }}</p>
+    </div>
 
-        tr:hover {
-            background-color: #f1f1f1;
-        }
+    <!-- DETAILS -->
+    <div class="profile-details">
+      <div>
+        <span>Gender</span>
+        <p>{{ user.gender or "Not specified" }}</p>
+      </div>
 
-        a {
-            text-decoration: none;
-            color: #4CAF50;
-        }
+      <div>
+        <span>DOB</span>
+        <p>{{ user.dob or "Not provided" }}</p>
+      </div>
+    </div>
 
-        .btn {
-            margin-top: 15px;
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+    <!-- ACTION -->
+    <div class="profile-actions">
+      <button class="btn-primary">Edit Profile</button>
+    </div>
 
-        .btn:hover {
-            background-color: #45a049;
-        }
-    </style>
-<body>
+  </div>
 
-<h1>👤 My Profile</h1>
-
-<div class="card">
-    <p><b>Name:</b> {{ user.name }}</p>
-    <p><b>Email:</b> {{ user.email }}</p>
-    <p><b>DOB:</b> {{ user.dob }}</p>
-    <p><b>Phone:</b> {{ user.phone }}</p>
-    <p><b>Gender:</b> {{ user.gender }}</p>
-    <p><b>Credits:</b> {{ user.credits }}</p>
-
-    <br>
-    <a href="/"><button class="btn">⬅ Back</button></a>
 </div>
 
-</body>
+{% endblock %}

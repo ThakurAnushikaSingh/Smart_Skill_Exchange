@@ -1,67 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Skill</title>
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f6f8;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
-    .card {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        width: 350px;
-        text-align: center;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-    }
-
-    button {
-        padding: 10px;
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-
-    button:hover {
-        background-color: #45a049;
-    }
-
-    a {
-        display: block;
-        margin-top: 10px;
-        text-decoration: none;
-        color: #4CAF50;
-    }
-	</style>
-</head>
-
-<body>
-
-<div class="card">
-    <h2>🧠 Add Skill</h2>
-
-    <form method="POST" action="/skills">
-        <input type="text" name="skill_name" placeholder="Enter Skill Name" required>
-        <button type="submit">Add Skill</button>
-    </form>
-
-    <a href="/">⬅ Back</a>
-</div>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<form method="POST">
+  <input name="name" placeholder="Skill name"><br>
+  <textarea name="description"></textarea><br>
+  <button>Add Skill</button>
+</form>
+{% endblock %}
