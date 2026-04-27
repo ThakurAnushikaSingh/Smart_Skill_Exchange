@@ -1,8 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<form method="POST">
-  <input name="name" placeholder="Skill name"><br>
-  <textarea name="description"></textarea><br>
-  <button>Add Skill</button>
-</form>
+<div class="profile-wrapper">
+  <div class="profile-card">
+    <h2>Add a New Skill</h2>
+    <p class="switch-text">Share what you can teach so others can request it.</p>
+
+    <form method="POST" style="margin-top: 18px;">
+      <div class="input-group">
+        <input name="name" placeholder="Skill name (e.g. Python Basics)" required>
+      </div>
+      <div class="input-group">
+        <textarea name="description" placeholder="Describe your skill and how you can help" rows="4" required></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Add Skill</button>
+        <a href="/skills" class="btn btn-outline">Back to Skills</a>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
