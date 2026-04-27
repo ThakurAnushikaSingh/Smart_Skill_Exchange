@@ -2,8 +2,11 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 from supabase import create_client, Client
 
 # 🔐 Supabase Config
-url = "https://qftsuqmhwnfqzudmhfee.supabase.co"
-key = "sb_publishable_X0N493XXYH7z0b9mYKGrkw_6CD0PeJm" 
+import os
+from supabase import create_client, Client
+
+url = os.getenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_KEY")
 
 supabase: Client = create_client(url, key)
 
