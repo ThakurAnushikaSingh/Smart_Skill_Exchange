@@ -10,20 +10,20 @@
       <p id="authSub">Login with your User ID + Email</p>
     </div>
 
-    {% if registration_user_id %}
-      <div class="card" style="margin-bottom:12px; background:#ecfeff;">
-        <p><strong>Registration successful!</strong></p>
-        <p>Your User ID: <code>{{ registration_user_id }}</code></p>
-      </div>
+    {% if auth_error %}
+      <div class="card" style="margin-bottom:12px; background:#fef2f2; color:#991b1b;">{{ auth_error }}</div>
+    {% endif %}
+    {% if auth_success %}
+      <div class="card" style="margin-bottom:12px; background:#ecfdf5; color:#166534;">{{ auth_success }}</div>
     {% endif %}
 
     <form id="loginForm" method="POST" action="/login">
       <div class="input-group">
-        <input name="user_id" required placeholder="User ID">
+        <input name="email" type="email" required placeholder="Email">
       </div>
 
       <div class="input-group">
-        <input name="email" type="email" required placeholder="Email">
+        <input name="password" type="password" required placeholder="Password">
       </div>
 
       <button type="submit" class="btn btn-primary">Login</button>
@@ -35,21 +35,41 @@
     </form>
 
     <form id="registerForm" method="POST" action="/register" class="hidden">
-        <div class="input-group">
-            <input name="name" required placeholder="Name">
-        </div>
+      <div class="input-group">
+        <input name="name" required placeholder="Name">
+      </div>
 
-        <div class="input-group">
-            <input name="email" type="email" required placeholder="Email">
-        </div>
+      <div class="input-group">
+        <input name="email" type="email" required placeholder="Email">
+      </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
+      <div class="input-group">
+        <input name="password" type="password" required placeholder="Password (8+ chars)">
+      </div>
 
-        <p class="switch-text">
-            Already have an account?
-            <span onclick="toggleAuth()">Login</span>
-        </p>
+      <div class="input-group">
+        <input name="dob" type="date">
+      </div>
 
+      <div class="input-group">
+        <select name="gender">
+          <option value="" selected>Select Gender (optional)</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <textarea name="bio" placeholder="Bio (optional)"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Register</button>
+
+      <p class="switch-text">
+        Already have an account?
+        <span onclick="toggleAuth()">Login</span>
+      </p>
     </form>
 
   </div>
@@ -57,14 +77,22 @@
 </div>
 
 <script>
-function toggleAuth() {
+function toggleAuth(force) {
   const login = document.getElementById("loginForm");
   const register = document.getElementById("registerForm");
   const title = document.getElementById("authTitle");
   const sub = document.getElementById("authSub");
 
-  login.classList.toggle("hidden");
-  register.classList.toggle("hidden");
+  if (force === "register") {
+    login.classList.add("hidden");
+    register.classList.remove("hidden");
+  } else if (force === "login") {
+    login.classList.remove("hidden");
+    register.classList.add("hidden");
+  } else {
+    login.classList.toggle("hidden");
+    register.classList.toggle("hidden");
+  }
 
   if (login.classList.contains("hidden")) {
     title.innerText = "Register";
@@ -74,6 +102,12 @@ function toggleAuth() {
     sub.innerText = "Login with your User ID + Email";
   }
 }
+
+{% if active_form == 'register' %}
+toggleAuth("register");
+{% elif active_form == 'login' %}
+toggleAuth("login");
+{% endif %}
 </script>
 
 {% endblock %}

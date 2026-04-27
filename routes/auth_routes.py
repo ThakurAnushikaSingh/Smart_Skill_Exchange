@@ -24,20 +24,20 @@ def register():
     result = register_user(data)
 
     if "error" in result:
-        return result["error"], 400
+        return render_template("auth.html", auth_error=result["error"], active_form="register"), 400
 
-    return render_template("auth.html", registration_user_id=result["user"]["id"])
+    return render_template("auth.html", auth_success="Registration successful. Please login.")
 
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    user_id = request.form.get("user_id", "")
     email = request.form.get("email", "")
+    password = request.form.get("password", "")
 
     result = login_user(user_id, email)
 
     if "error" in result:
-        return result["error"], 400
+        return render_template("auth.html", auth_error=result["error"], active_form="login"), 400
 
     session["user"] = result["user"]
     session.permanent = True
