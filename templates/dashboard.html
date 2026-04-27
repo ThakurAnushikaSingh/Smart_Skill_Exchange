@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard">
+  <div class="welcome-card">
+    <h1>Skill Exchange Control Center</h1>
+    <p>Credits: <strong>{{ user.credits or 0 }}</strong></p>
+    <div class="actions">
+      <a href="/add-skill" class="btn btn-secondary">Add Skill</a>
+      <a href="/sessions" class="btn btn-primary">View Sessions</a>
+      <a href="/skill-requests" class="btn btn-outline">Request Skill</a>
+      <a href="/transactions" class="btn btn-outline">Transactions</a>
+      <a href="/certifications" class="btn btn-outline">Certifications</a>
+    </div>
+  </div>
+
+  <div class="quick-grid">
+    <div class="card">
+      <h3>Your Skills</h3>
+      <p>{{ my_skills|length }} linked skills</p>
+    </div>
+    <div class="card">
+      <h3>Sessions</h3>
+      <p>{{ sessions|length }} total sessions</p>
+    </div>
+    <div class="card">
+      <h3>Skill Catalog</h3>
+      <p>{{ skills_catalog|length }} reusable skills</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

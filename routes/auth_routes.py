@@ -3,13 +3,20 @@ from services.auth_service import register_user, login_user
 
 auth_bp = Blueprint("auth", __name__)
 
+
 @auth_bp.route("/")
 def landing():
+    if "user" in session:
+        return redirect("/home")
     return render_template("landing.html")
+
 
 @auth_bp.route("/auth")
 def auth_page():
+    if "user" in session:
+        return redirect("/home")
     return render_template("auth.html")
+
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
@@ -17,22 +24,25 @@ def register():
     result = register_user(data)
 
     if "error" in result:
-        return result["error"]
+        return result["error"], 400
 
-    return redirect("/auth")
+    return render_template("auth.html", registration_user_id=result["user"]["id"])
+
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    email = request.form["email"]
-    password = request.form["password"]
+    user_id = request.form.get("user_id", "")
+    email = request.form.get("email", "")
 
-    result = login_user(email, password)
+    result = login_user(user_id, email)
 
     if "error" in result:
-        return result["error"]
+        return result["error"], 400
 
     session["user"] = result["user"]
+    session.permanent = True
     return redirect("/home")
+
 
 @auth_bp.route("/logout")
 def logout():

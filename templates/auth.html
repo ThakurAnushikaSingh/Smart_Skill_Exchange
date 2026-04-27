@@ -7,23 +7,26 @@
 
     <div class="auth-header">
       <h2 id="authTitle">Login</h2>
-      <p id="authSub">Welcome back 👋</p>
+      <p id="authSub">Login with your User ID + Email</p>
     </div>
 
-    <!-- LOGIN FORM -->
+    {% if registration_user_id %}
+      <div class="card" style="margin-bottom:12px; background:#ecfeff;">
+        <p><strong>Registration successful!</strong></p>
+        <p>Your User ID: <code>{{ registration_user_id }}</code></p>
+      </div>
+    {% endif %}
+
     <form id="loginForm" method="POST" action="/login">
-      
       <div class="input-group">
-        <input name="email" required>
-        <label>Email</label>
+        <input name="user_id" required placeholder="User ID">
       </div>
 
       <div class="input-group">
-        <input name="password" type="password" required>
-        <label>Password</label>
+        <input name="email" type="email" required placeholder="Email">
       </div>
 
-      <button class="btn-primary">Login</button>
+      <button type="submit" class="btn btn-primary">Login</button>
 
       <p class="switch-text">
         Don't have an account?
@@ -31,57 +34,23 @@
       </p>
     </form>
 
-    <!-- REGISTER FORM -->
     <form id="registerForm" method="POST" action="/register" class="hidden">
-
-        <!-- NAME -->
         <div class="input-group">
-            <input name="name" required placeholder=" ">
-            <label>Name</label>
+            <input name="name" required placeholder="Name">
         </div>
 
-        <!-- EMAIL -->
         <div class="input-group">
-            <input name="email" type="email" required placeholder=" ">
-            <label>Email</label>
+            <input name="email" type="email" required placeholder="Email">
         </div>
 
-        <!-- PASSWORD -->
-        <div class="input-group">
-            <input name="password" type="password" required placeholder=" ">
-            <label>Password</label>
-        </div>
-
-        <!-- DOB (DATE PICKER) -->
-        <div class="input-group">
-            <input name="dob" type="date" required>
-            <label class="active-label">Date of Birth</label>
-        </div>
-
-        <!-- GENDER DROPDOWN -->
-        <div class="input-group">
-            <select name="gender" required>
-            <option value="" disabled selected>Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-            </select>
-        </div>
-
-        <!-- BIO -->
-        <div class="input-group">
-            <textarea name="bio" placeholder=" "></textarea>
-            <label>Bio</label>
-        </div>
-
-        <button class="btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary">Register</button>
 
         <p class="switch-text">
             Already have an account?
             <span onclick="toggleAuth()">Login</span>
         </p>
 
-        </form>
+    </form>
 
   </div>
 
@@ -99,10 +68,10 @@ function toggleAuth() {
 
   if (login.classList.contains("hidden")) {
     title.innerText = "Register";
-    sub.innerText = "Create your account 🚀";
+    sub.innerText = "Create your account (name + email)";
   } else {
     title.innerText = "Login";
-    sub.innerText = "Welcome back 👋";
+    sub.innerText = "Login with your User ID + Email";
   }
 }
 </script>
