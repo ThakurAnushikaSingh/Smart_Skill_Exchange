@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="skills-page">
+  <h1>Certifications</h1>
+  <div class="skills-grid">
+    {% for c in certifications %}
+    <div class="skill-card">
+      <h3>{{ c.skill.name if c.skill else c.skill_id }}</h3>
+      <p>Role: {{ c.role }}</p>
+      <p>Awarded: {{ c.awarded_at }}</p>
+    </div>
+    {% else %}
+    <p class="switch-text">No certifications yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
