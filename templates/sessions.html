@@ -2,7 +2,7 @@
 {% block content %}
 <div class="skills-page">
   <h1>Learning Sessions</h1>
-  <p class="switch-text">Create and join sessions with credit requirements.</p>
+  <p class="switch-text">Create, join, complete, and attend live sessions.</p>
 
   <div class="card" style="margin:16px 0;">
     <h3>Create Session</h3>
@@ -22,13 +22,40 @@
     </form>
   </div>
 
+  <div class="card" style="margin:16px 0;">
+    <h3>Complete Session (Manual)</h3>
+    <form method="POST" action="/sessions/complete">
+      <div class="input-group"><input name="session_id" placeholder="Session ID" required></div>
+      <div class="input-group"><input name="learner_id" placeholder="Learner ID (reference only)"></div>
+      <div class="input-group"><input name="trainer_id" placeholder="Trainer ID (reference only)"></div>
+      <div class="input-group"><input name="skill_id" placeholder="Skill ID (reference only)"></div>
+      <div class="input-group"><input name="credits" type="number" placeholder="Credits (reference only)"></div>
+      <button class="btn btn-secondary" type="submit">Complete Session</button>
+    </form>
+  </div>
+
   <div class="skills-grid">
     {% for s in sessions %}
     <div class="skill-card">
       <h3>{{ s.skill.name if s.skill else s.skill_id }}</h3>
       <p>Status: {{ s.status }}</p>
+      <p>Trainer: {{ s.trainer_id }}</p>
+      <p>Learner: {{ s.learner_id or 'Open' }}</p>
       <p>When: {{ s.scheduled_at }}</p>
       <p>Credits: {{ s.required_credits }}</p>
+      <div class="actions">
+        {% if not s.learner_id %}
+        <form method="POST" action="/sessions/{{ s.id }}/join">
+          <button class="btn btn-outline" type="submit">Join</button>
+        </form>
+        {% endif %}
+        <a href="/sessions/{{ s.id }}/live" class="btn btn-primary">Open Live</a>
+        {% if s.status == 'scheduled' %}
+        <form method="POST" action="/sessions/{{ s.id }}/complete">
+          <button class="btn btn-secondary" type="submit">Quick Complete</button>
+        </form>
+        {% endif %}
+      </div>
     </div>
     {% endfor %}
   </div>

@@ -1,23 +1,28 @@
-from models.user_model import create_user, get_user_by_email
-from utils.auth_utils import hash_password, verify_password
+from models.user_model import create_user, get_user_by_email, get_user_by_id_and_email
+
 
 def register_user(data):
-    if get_user_by_email(data["email"]):
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+
+    if not name or not email:
+        return {"error": "Name and email are required"}
+
+    if get_user_by_email(email):
         return {"error": "User already exists"}
 
-    data["password_hash"] = hash_password(data["password"])
-    del data["password"]
+    created = create_user({"name": name, "email": email})
+    return {"success": True, "user": created}
 
-    create_user(data)
-    return {"success": True}
 
-def login_user(email, password):
-    user = get_user_by_email(email)
+def login_user(user_id, email):
+    user_id = (user_id or "").strip()
+    email = (email or "").strip().lower()
+    if not user_id or not email:
+        return {"error": "user_id and email are required"}
 
+    user = get_user_by_id_and_email(user_id, email)
     if not user:
-        return {"error": "User not found"}
-
-    if not verify_password(user["password_hash"], password):
-        return {"error": "Invalid credentials"}
+        return {"error": "Invalid user_id or email"}
 
     return {"success": True, "user": user}

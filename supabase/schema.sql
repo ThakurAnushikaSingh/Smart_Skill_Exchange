@@ -29,6 +29,15 @@ create table if not exists public.user_skills (
   primary key (user_id, skill_id)
 );
 
+
+create table if not exists public.skill_requests (
+  id uuid primary key default gen_random_uuid(),
+  requester_id uuid not null references public.users(id) on delete cascade,
+  skill_id uuid not null references public.skills(id) on delete cascade,
+  status text not null default 'open' check (status in ('open','matched','cancelled')),
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.learning_sessions (
   id uuid primary key default gen_random_uuid(),
   trainer_id uuid not null references public.users(id) on delete cascade,
@@ -36,6 +45,9 @@ create table if not exists public.learning_sessions (
   skill_id uuid not null references public.skills(id) on delete restrict,
   scheduled_at timestamptz not null,
   required_credits integer not null check (required_credits > 0),
+  meet_link text,
+  trainer_notes text,
+  learner_notes text,
   status text not null default 'scheduled' check (status in ('scheduled','in_progress','completed','cancelled')),
   completed_at timestamptz,
   created_at timestamptz not null default now()
@@ -64,6 +76,7 @@ create table if not exists public.credit_transactions (
 
 create index if not exists idx_user_skills_skill on public.user_skills(skill_id);
 create index if not exists idx_sessions_trainer on public.learning_sessions(trainer_id);
+create index if not exists idx_skill_requests_requester on public.skill_requests(requester_id);
 create index if not exists idx_sessions_learner on public.learning_sessions(learner_id);
 create index if not exists idx_sessions_status on public.learning_sessions(status);
 create index if not exists idx_transactions_from on public.credit_transactions(from_user_id);

@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 
 from flask import Flask
@@ -6,7 +7,6 @@ from routes.auth_routes import auth_bp
 from routes.user_routes import user_bp
 from routes.skill_routes import skill_bp
 from routes.exchange_routes import exchange_bp
-
 
 
 def create_app():
@@ -18,6 +18,9 @@ def create_app():
             "Missing Flask secret key. Set FLASK_SECRET_KEY (or SECRET_KEY) in your environment/.env."
         )
     app.secret_key = secret_key
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=12)
 
     # Register blueprints
     app.register_blueprint(auth_bp)

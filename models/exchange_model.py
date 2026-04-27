@@ -7,6 +7,7 @@ USER_SKILLS_TABLE = "user_skills"
 SESSIONS_TABLE = "learning_sessions"
 TRANSACTIONS_TABLE = "credit_transactions"
 CERTIFICATIONS_TABLE = "certifications"
+SKILL_REQUESTS_TABLE = "skill_requests"
 
 
 def list_skills_catalog():
@@ -100,6 +101,22 @@ def list_certifications(user_id):
         .select("*, skill:skills(id,name)")
         .eq("user_id", user_id)
         .order("awarded_at", desc=True)
+        .execute()
+        .data
+    )
+
+
+def create_skill_request(requester_id, skill_id):
+    payload = {"requester_id": requester_id, "skill_id": skill_id, "status": "open"}
+    return supabase.table(SKILL_REQUESTS_TABLE).insert(payload).execute().data[0]
+
+
+def list_skill_requests(user_id):
+    return (
+        supabase.table(SKILL_REQUESTS_TABLE)
+        .select("*, skill:skills(id,name)")
+        .eq("requester_id", user_id)
+        .order("created_at", desc=True)
         .execute()
         .data
     )

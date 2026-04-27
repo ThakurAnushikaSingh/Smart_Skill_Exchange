@@ -11,6 +11,8 @@ from models.exchange_model import (
     list_skills_catalog,
     list_transactions,
     upsert_skill,
+    create_skill_request,
+    list_skill_requests,
 )
 
 VALID_PROFICIENCY = {"beginner", "intermediate", "advanced", "expert"}
@@ -100,3 +102,18 @@ def get_certifications(user):
     if not user_id:
         return []
     return list_certifications(user_id)
+
+
+def request_skill(user, skill_id):
+    user_id = user.get("id")
+    if not user_id or not skill_id:
+        return {"error": "requester_id and skill_id are required"}
+    req = create_skill_request(user_id, skill_id)
+    return {"success": True, "request": req}
+
+
+def get_skill_requests(user):
+    user_id = user.get("id")
+    if not user_id:
+        return []
+    return list_skill_requests(user_id)

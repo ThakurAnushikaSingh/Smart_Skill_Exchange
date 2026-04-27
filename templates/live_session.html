@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="skills-page">
+  <h1>Live Learning Interface</h1>
+  <p class="switch-text">Session ID: {{ session_id }}</p>
+
+  <div class="card" style="margin: 16px 0;">
+    <h3>Google Meet</h3>
+    <p>Use your session meet link from backend/session record.</p>
+    <a class="btn btn-primary" href="https://meet.google.com" target="_blank" rel="noopener">Open Google Meet</a>
+  </div>
+
+  <div class="quick-grid">
+    <div class="card">
+      <h3>Trainer Panel</h3>
+      <textarea rows="8" placeholder="Trainer teaching plan / checkpoints"></textarea>
+    </div>
+    <div class="card">
+      <h3>Learner Notes</h3>
+      <textarea rows="8" placeholder="Learner notes"></textarea>
+    </div>
+  </div>
+</div>
+{% endblock %}
