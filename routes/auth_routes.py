@@ -34,7 +34,7 @@ def login():
     email = request.form.get("email", "")
     password = request.form.get("password", "")
 
-    result = login_user(email, password)
+    result = login_user(user_id, email)
 
     if "error" in result:
         return render_template("auth.html", auth_error=result["error"], active_form="login"), 400

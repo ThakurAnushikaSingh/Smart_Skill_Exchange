@@ -1,5 +1,5 @@
-from models.user_model import create_user, get_user_by_email
-from utils.auth_utils import hash_password, verify_password
+from models.user_model import create_user, get_user_by_email, get_user_by_id_and_email
+
 
 
 def register_user(data):
