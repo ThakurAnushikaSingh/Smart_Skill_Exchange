@@ -5,3 +5,4 @@ python-dotenv==1.2.2
 pydantic==2.13.3
 pydantic-settings==2.11.0
 email-validator==2.3.0
+uvicorn
