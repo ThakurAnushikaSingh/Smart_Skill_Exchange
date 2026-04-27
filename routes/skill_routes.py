@@ -11,7 +11,7 @@ def skills():
 @skill_bp.route("/add-skill", methods=["GET", "POST"])
 def add_skill():
     if "user" not in session:
-        return redirect("/login")
+        return redirect("/auth")
 
     if request.method == "POST":
         data = dict(request.form)
