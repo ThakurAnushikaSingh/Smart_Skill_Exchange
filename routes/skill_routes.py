@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, session
-from services.skill_service import fetch_skills, create_skill
+
+from services.exchange_service import add_skill_to_user
+from services.skill_service import fetch_skills
 
 skill_bp = Blueprint("skill", __name__)
 
@@ -17,7 +19,10 @@ def add_skill():
 
     if request.method == "POST":
         data = dict(request.form)
-        create_skill(data)
+        result = add_skill_to_user(session["user"], data)
+        if result.get("error"):
+            return result["error"], 400
+
         skill_name = data.get("name") or data.get("skill_name") or "Your skill"
         return render_template("skill_success.html", skill_name=skill_name)
 

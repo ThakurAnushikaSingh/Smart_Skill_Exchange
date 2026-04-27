@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="skills-page">
+  <h1>Learning Sessions</h1>
+  <p class="switch-text">Create and join sessions with credit requirements.</p>
+
+  <div class="card" style="margin:16px 0;">
+    <h3>Create Session</h3>
+    <form method="POST" action="/sessions">
+      <div class="input-group"><input name="learner_id" placeholder="Learner User ID (optional for open session)"></div>
+      <div class="input-group">
+        <select name="skill_id" required>
+          <option value="" disabled selected>Select skill</option>
+          {% for item in skills %}
+          <option value="{{ item.id }}">{{ item.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="input-group"><input type="datetime-local" name="scheduled_at" required></div>
+      <div class="input-group"><input type="number" min="1" name="required_credits" value="1" required></div>
+      <button class="btn btn-primary" type="submit">Create Session</button>
+    </form>
+  </div>
+
+  <div class="skills-grid">
+    {% for s in sessions %}
+    <div class="skill-card">
+      <h3>{{ s.skill.name if s.skill else s.skill_id }}</h3>
+      <p>Status: {{ s.status }}</p>
+      <p>When: {{ s.scheduled_at }}</p>
+      <p>Credits: {{ s.required_credits }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
