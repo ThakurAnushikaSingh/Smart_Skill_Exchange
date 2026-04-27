@@ -6,7 +6,6 @@
 
   <div class="profile-card">
 
-    <!-- TOP SECTION -->
     <div class="profile-header">
       <div class="avatar">
         {{ user.name[0] }}
@@ -18,13 +17,11 @@
       </div>
     </div>
 
-    <!-- BIO -->
     <div class="profile-section">
       <h3>About</h3>
       <p>{{ user.bio or "No bio added yet." }}</p>
     </div>
 
-    <!-- DETAILS -->
     <div class="profile-details">
       <div>
         <span>Gender</span>
@@ -37,9 +34,27 @@
       </div>
     </div>
 
-    <!-- ACTION -->
+    <div class="profile-section">
+      <h3>My Skills</h3>
+      {% if my_skills %}
+        <div class="skills-chip-list">
+          {% for skill in my_skills %}
+            <div class="skill-chip">
+              <strong>{{ skill.name or skill.skill_name or "Untitled Skill" }}</strong>
+              {% if skill.description %}
+                <p>{{ skill.description }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="switch-text">No personal skills found yet. Add one from the Add Skill page.</p>
+      {% endif %}
+    </div>
+
     <div class="profile-actions">
-      <button class="btn-primary">Edit Profile</button>
+      <a href="/add-skill" class="btn btn-primary">Add New Skill</a>
+      <button type="button" class="btn btn-secondary">Edit Profile (Soon)</button>
     </div>
 
   </div>
