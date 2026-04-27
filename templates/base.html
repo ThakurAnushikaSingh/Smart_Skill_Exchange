@@ -17,7 +17,22 @@
   </div>
 
   <div class="container">
+    <div class="back-row">
+      <button class="btn btn-outline" type="button" onclick="goBack()">← Back</button>
+    </div>
+  </div>
+
     {% block content %}{% endblock %}
   </div>
+
+  <script>
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/home';
+      }
+    }
+  </script>
 </body>
 </html>

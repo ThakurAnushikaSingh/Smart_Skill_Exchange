@@ -342,3 +342,36 @@ a.btn-outline:focus {
     align-items: flex-start;
   }
 }
+
+
+.back-row {
+  margin: 8px 0 12px;
+}
+
+.success-card {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.skills-chip-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.skill-chip {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fbff;
+}
+
+.skill-chip p {
+  margin-top: 6px;
+  color: var(--muted);
+}
