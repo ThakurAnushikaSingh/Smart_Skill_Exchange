@@ -102,7 +102,12 @@ def add_skill_page():
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+    res = supabase.table("users").select("*").eq("id", user_id).execute()
+    user = res.data[0] if res.data else None
+    return render_template('home.html', user=user)
 
 @app.route('/skills')
 def skills_list():
@@ -134,6 +139,15 @@ def sessions_page():
 def index():
     if 'user_id' in session:
         return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/auth')
+def auth_landing():
     return redirect(url_for('login'))
 
 # Add other routes and logic as needed
