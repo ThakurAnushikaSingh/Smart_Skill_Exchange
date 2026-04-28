@@ -3,21 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<<<<<<< HEAD
   <title>Smart Skill Exchange</title>
-=======
->>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" type="image/x-icon">
 </head>
 <body>
-<<<<<<< HEAD
   <nav class="navbar">
     <h3>SkillExchange</h3>
-=======
-  <div class="navbar">
-    <h3>Skill Exchange</h3>
->>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
     <div class="navbar-links">
       {% if session.get('user') %}
         <a href="/home">Home</a>
@@ -26,19 +18,11 @@
         <a href="/profile" class="btn btn-primary" style="padding: 0.5rem 1rem;">Profile</a>
         <a href="/logout" style="color: var(--danger); margin-left: 10px;">Logout</a>
       {% else %}
-<<<<<<< HEAD
         <a href="/">Landing</a>
         <a href="/auth" class="btn btn-primary">Get Started</a>
       {% endif %}
     </div>
   </nav>
-=======
-        <a href="/" class="btn btn-outline">Landing</a>
-        <a href="/auth" class="btn btn-primary">Login / Register</a>
-      {% endif %}
-    </div>
-  </div>
->>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 
   <div class="container">
     {% if request.path not in ['/', '/auth'] %}
@@ -60,13 +44,9 @@
       {% endif %}
     {% endwith %}
 
-<<<<<<< HEAD
     <main>
       {% block content %}{% endblock %}
     </main>
-=======
-    {% block content %}{% endblock %}
->>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
   </div>
 
   <script>
@@ -77,9 +57,8 @@
         window.location.href = '/home';
       }
     }
-<<<<<<< HEAD
     
-    // Auto-hide flash messages
+    // Auto-hide flash messages after 5 seconds
     setTimeout(() => {
       const flashes = document.querySelectorAll('.flash');
       flashes.forEach(f => {
@@ -88,8 +67,6 @@
         setTimeout(() => f.remove(), 300);
       });
     }, 5000);
-=======
->>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
   </script>
 </body>
 </html>
