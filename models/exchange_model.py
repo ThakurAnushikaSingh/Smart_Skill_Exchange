@@ -45,13 +45,16 @@ def get_user_skills(user_id):
     )
 
 
-def create_session(trainer_id, learner_id, skill_id, scheduled_at, required_credits):
+def create_session(trainer_id, learner_id, skill_id, scheduled_at, required_credits, meet_link=None, trainer_notes=None, learner_notes=None):
     payload = {
         "trainer_id": trainer_id,
         "learner_id": learner_id,
         "skill_id": skill_id,
         "scheduled_at": scheduled_at.isoformat() if isinstance(scheduled_at, datetime) else scheduled_at,
         "required_credits": required_credits,
+        "meet_link": meet_link,
+        "trainer_notes": trainer_notes,
+        "learner_notes": learner_notes,
         "status": "scheduled",
     }
     return supabase.table(SESSIONS_TABLE).insert(payload).execute().data[0]

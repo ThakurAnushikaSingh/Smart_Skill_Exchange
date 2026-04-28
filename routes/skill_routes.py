@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, flash
 
 from services.exchange_service import add_skill_to_user
 from services.skill_service import fetch_skills
 
 skill_bp = Blueprint("skill", __name__)
+
 
 
 @skill_bp.route("/skills")
@@ -12,18 +13,23 @@ def skills():
     return render_template("skill_list.html", skills=skills)
 
 
+
 @skill_bp.route("/add-skill", methods=["GET", "POST"])
 def add_skill():
     if "user" not in session:
+        return redirect("/auth")
         return redirect("/auth")
 
     if request.method == "POST":
         data = dict(request.form)
         result = add_skill_to_user(session["user"], data)
         if result.get("error"):
-            return result["error"], 400
+            flash(result["error"], "error")
+            return redirect("/add-skill")
 
         skill_name = data.get("name") or data.get("skill_name") or "Your skill"
+        flash(f"{skill_name} added successfully.", "success")
         return render_template("skill_success.html", skill_name=skill_name)
 
     return render_template("add_skill.html")
+

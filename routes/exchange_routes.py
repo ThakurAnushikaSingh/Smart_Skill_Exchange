@@ -1,5 +1,6 @@
-from flask import Blueprint, redirect, render_template, request, session, jsonify
+from flask import Blueprint, redirect, render_template, request, session, jsonify, flash
 
+from models.user_model import get_user_by_id
 from services.exchange_service import (
     add_skill_to_user,
     complete_learning_session,
@@ -52,7 +53,10 @@ def skill_requests_route():
         payload = dict(request.form) or (request.get_json(silent=True) or {})
         result = request_skill(user, payload.get("skill_id"))
         if result.get("error"):
-            return jsonify(result), 400
+            flash(result["error"], "error")
+        else:
+            flash("Skill request created successfully.", "success")
+            return redirect("/skill-requests")
 
     context = get_dashboard_context(user)
     requests = get_skill_requests(user)
@@ -81,7 +85,10 @@ def create_session_route():
     payload = dict(request.form) or (request.get_json(silent=True) or {})
     result = create_learning_session(user, payload)
     if result.get("error"):
-        return jsonify(result), 400
+        flash(result["error"], "error")
+        return redirect("/sessions")
+
+    flash("Session created successfully.", "success")
     return redirect("/sessions")
 
 
@@ -92,7 +99,9 @@ def join_session_route(session_id):
         return resp
     result = join_learning_session(user, session_id)
     if result.get("error"):
-        return jsonify(result), 400
+        flash(result["error"], "error")
+    else:
+        flash("Session joined.", "success")
     return redirect("/sessions")
 
 
@@ -104,10 +113,15 @@ def complete_session_form_route():
     session_id = request.form.get("session_id", "")
     result = complete_learning_session(user, session_id)
     if result.get("error"):
-        return result["error"], 400
+        flash(result["error"], "error")
+        return redirect("/sessions")
 
-    # refresh user state quickly for credits on UI
-    session["user"] = {**session["user"], "credits": session["user"].get("credits", 0)}
+    # refresh user credits/profile from DB after transaction
+    refreshed = get_user_by_id(user.get("id"))
+    if refreshed:
+        session["user"] = refreshed
+
+    flash("Session completed and credits transferred.", "success")
     return redirect("/transactions")
 
 
@@ -119,6 +133,9 @@ def complete_session_route(session_id):
     result = complete_learning_session(user, session_id)
     if result.get("error"):
         return jsonify(result), 400
+    refreshed = get_user_by_id(user.get("id"))
+    if refreshed:
+        session["user"] = refreshed
     return jsonify(result), 200
 
 

@@ -33,8 +33,10 @@ def add_skill_to_user(user, payload):
         return {"error": "Invalid proficiency level"}
 
     skill = upsert_skill(skill_name)
-    add_user_skill(user_id, skill["id"], proficiency, can_teach)
+    if not skill:
+        return {"error": "Failed to create/find skill"}
 
+    add_user_skill(user_id, skill["id"], proficiency, can_teach)
     return {"success": True, "skill": skill}
 
 
@@ -51,10 +53,14 @@ def get_dashboard_context(user):
 
 def create_learning_session(user, payload):
     trainer_id = user.get("id")
-    learner_id = payload.get("learner_id") or None
-    skill_id = payload.get("skill_id")
-    required_credits = int(payload.get("required_credits", 1))
-    scheduled_at_raw = payload.get("scheduled_at")
+    learner_id = (payload.get("learner_id") or "").strip() or None
+    skill_id = (payload.get("skill_id") or "").strip()
+    scheduled_at_raw = (payload.get("scheduled_at") or "").strip()
+
+    try:
+        required_credits = int(payload.get("required_credits", 1))
+    except (TypeError, ValueError):
+        return {"error": "required_credits must be a number"}
 
     if not trainer_id or not skill_id or not scheduled_at_raw:
         return {"error": "trainer, skill and scheduled time are required"}
@@ -66,7 +72,16 @@ def create_learning_session(user, payload):
     except ValueError:
         return {"error": "scheduled_at must be ISO datetime"}
 
-    created = create_session(trainer_id, learner_id, skill_id, scheduled_at, required_credits)
+    created = create_session(
+        trainer_id,
+        learner_id,
+        skill_id,
+        scheduled_at,
+        required_credits,
+        payload.get("meet_link"),
+        payload.get("trainer_notes"),
+        payload.get("learner_notes"),
+    )
     return {"success": True, "session": created}
 
 

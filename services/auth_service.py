@@ -2,6 +2,7 @@ from models.user_model import create_user, get_user_by_email, get_user_by_id_and
 
 
 
+
 def register_user(data):
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip().lower()
