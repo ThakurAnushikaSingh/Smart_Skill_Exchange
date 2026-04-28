@@ -7,7 +7,7 @@
 
     <div class="auth-header">
       <h2 id="authTitle">Login</h2>
-      <p id="authSub">Welcome back 👋</p>
+      <p id="authSub">Login with your User ID + Email</p>
     </div>
 
     {% if auth_error %}
@@ -96,10 +96,10 @@ function toggleAuth(force) {
 
   if (login.classList.contains("hidden")) {
     title.innerText = "Register";
-    sub.innerText = "Create your account 🚀";
+    sub.innerText = "Create your account (name + email)";
   } else {
     title.innerText = "Login";
-    sub.innerText = "Welcome back 👋";
+    sub.innerText = "Login with your User ID + Email";
   }
 }
 
