@@ -1,45 +1,57 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<div class="dashboard">
+<div class="dashboard-wrapper">
 
-  <!-- HERO / WELCOME -->
-  <div class="welcome-card">
-    <h1>Welcome, {{ user.name }} 👋</h1>
-    <p>Ready to learn something new or share your skills today?</p>
-
-    <div class="actions">
-      <a href="/skills" class="btn btn-primary">Browse Skills</a>
-      <a href="/add-skill" class="btn btn-secondary">Add Skill</a>
-      <a href="/skill-requests" class="btn btn-outline">Request Skill</a>
-      <a href="/sessions" class="btn btn-outline">Complete Session</a>
+  <!-- Welcome Hero -->
+  <section class="welcome-card card">
+    <div class="welcome-content">
+      <h2>Welcome back, {{ user.name }}!</h2>
+      <p>Your journey of continuous learning and teaching starts here.</p>
+      
+      <div class="actions" style="margin-top: 2.5rem;">
+        <a href="/skills" class="btn btn-primary">Learn a Skill</a>
+        <a href="/share-skill" class="btn btn-secondary">Share a Skill</a>
+        <a href="/growth-hub" class="btn btn-secondary">Growth Hub</a>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- QUICK LINKS -->
+  <!-- Quick Access Grid -->
   <div class="quick-grid">
-
     <div class="card">
-      <h3>📚 Your Skills</h3>
-      <p>Manage what you offer or want to learn</p>
-      <a href="/my-dashboard" class="link">Open Dashboard →</a>
+      <div class="card-icon" style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+      <h3>Explore</h3>
+      <p>Browse available skills and find a mentor.</p>
+      <a href="/skills" class="btn btn-outline" style="margin-top: 1.5rem; width: 100%;">Browse Catalog</a>
     </div>
 
     <div class="card">
-      <h3>🤝 Exchanges</h3>
-      <p>Track your learning sessions</p>
-      <a href="/sessions" class="link">View Sessions →</a>
+      <div class="card-icon" style="font-size: 2rem; margin-bottom: 1rem;">📢</div>
+      <h3>Requests</h3>
+      <p>See who needs help with skills you have.</p>
+      <a href="/share-skill" class="btn btn-outline" style="margin-top: 1.5rem; width: 100%;">View Requests</a>
     </div>
 
     <div class="card">
-      <h3>⭐ Progress</h3>
-      <p>See your growth & achievements</p>
-      <a href="/transactions" class="link">View Transactions →</a>
+      <div class="card-icon" style="font-size: 2rem; margin-bottom: 1rem;">📈</div>
+      <h3>History</h3>
+      <p>Track your sessions and credits.</p>
+      <a href="/growth-hub" class="btn btn-outline" style="margin-top: 1.5rem; width: 100%;">Full History</a>
     </div>
-
   </div>
 
 </div>
+
+
+<style>
+  .dashboard-wrapper {
+    animation: fadeIn 0.6s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 
 {% endblock %}

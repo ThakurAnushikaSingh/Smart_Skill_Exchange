@@ -1,14 +1,44 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="hero">
   
-  <h1>Learn. Teach. Grow.</h1>
-  <p>Exchange skills with people around you and build your future together.</p>
+  <span style="display: inline-block; padding: 0.5rem 1rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 2rem; letter-spacing: 0.1em;">
+    The Future of Peer Learning
+  </span>
+  
+  <h1>Learn. Teach. <span style="background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Grow Together.</span></h1>
+  <p>The decentralized marketplace for knowledge. Trade your skills for credits and unlock access to experts worldwide.</p>
 
-  <div class="hero-buttons">
-    <a href="/auth" class="btn btn-primary">Get Started</a>
+  <div class="hero-buttons" style="display: flex; gap: 1rem; margin-top: 1rem;">
+    <a href="/auth" class="btn btn-primary">Join the Exchange</a>
+    <a href="/skills" class="btn btn-secondary">Explore Catalog</a>
+  </div>
+
+  <div class="stats-row" style="display: flex; gap: 4rem; margin-top: 6rem;">
+    <div class="stat">
+      <h3 style="font-size: 2rem; font-weight: 800;">500+</h3>
+      <p style="color: var(--text-muted);">Skills Listed</p>
+    </div>
+    <div class="stat">
+      <h3 style="font-size: 2rem; font-weight: 800;">10k+</h3>
+      <p style="color: var(--text-muted);">Learning Hours</p>
+    </div>
+    <div class="stat">
+      <h3 style="font-size: 2rem; font-weight: 800;">24/7</h3>
+      <p style="color: var(--text-muted);">Expert Support</p>
+    </div>
   </div>
 
 </div>
+
+<style>
+  .hero {
+    padding: 6rem 1rem;
+    animation: fadeIn 0.8s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
 {% endblock %}

@@ -1,5 +1,4 @@
 from flask import Blueprint, redirect, render_template, request, session, jsonify, flash
-
 from models.user_model import get_user_by_id
 from services.exchange_service import (
     add_skill_to_user,
@@ -9,8 +8,9 @@ from services.exchange_service import (
     get_dashboard_context,
     get_transactions,
     join_learning_session,
-    request_skill,
-    get_skill_requests,
+    request_skill_with_time,
+    get_requests_for_user_skills,
+    get_skill_requests_for_user,
 )
 
 exchange_bp = Blueprint("exchange", __name__)
@@ -28,53 +28,51 @@ def my_dashboard():
     if resp:
         return resp
     context = get_dashboard_context(user)
-    context["skill_requests"] = get_skill_requests(user)
-    return render_template("dashboard.html", user=user, **context)
+    return render_template("profile.html", user=user, my_skills=context["my_skills"])
 
 
-@exchange_bp.route("/user-skills/add", methods=["POST"])
-def add_user_skill():
+@exchange_bp.route("/share-skill")
+def share_skill_page():
     user, resp = require_auth()
     if resp:
         return resp
-    result = add_skill_to_user(user, dict(request.form) or (request.get_json(silent=True) or {}))
+    requests = get_requests_for_user_skills(user)
+    return render_template("share_skill.html", user=user, requests=requests)
+
+
+@exchange_bp.route("/growth-hub")
+def growth_hub():
+    user, resp = require_auth()
+    if resp:
+        return resp
+    
+    # Refresh user data from DB to ensure credits are up to date
+    refreshed = get_user_by_id(user.get("id"))
+    if refreshed:
+        session["user"] = refreshed
+        user = refreshed
+
+    context = get_dashboard_context(user)
+    return render_template("growth_hub.html", user=user, sessions=context["sessions"])
+
+
+
+@exchange_bp.route("/skill-requests", methods=["POST"])
+def create_skill_request_route():
+    user, resp = require_auth()
+    if resp:
+        return resp
+    
+    skill_id = request.form.get("skill_id")
+    suggested_time = request.form.get("suggested_time")
+    
+    result = request_skill_with_time(user, skill_id, suggested_time)
     if result.get("error"):
-        return jsonify(result), 400
-    return jsonify(result), 201
-
-
-@exchange_bp.route("/skill-requests", methods=["GET", "POST"])
-def skill_requests_route():
-    user, resp = require_auth()
-    if resp:
-        return resp
-
-    if request.method == "POST":
-        payload = dict(request.form) or (request.get_json(silent=True) or {})
-        result = request_skill(user, payload.get("skill_id"))
-        if result.get("error"):
-            flash(result["error"], "error")
-        else:
-            flash("Skill request created successfully.", "success")
-            return redirect("/skill-requests")
-
-    context = get_dashboard_context(user)
-    requests = get_skill_requests(user)
-    return render_template(
-        "skill_requests.html",
-        user=user,
-        skills=context["skills_catalog"],
-        skill_requests=requests,
-    )
-
-
-@exchange_bp.route("/sessions", methods=["GET"])
-def sessions_page():
-    user, resp = require_auth()
-    if resp:
-        return resp
-    context = get_dashboard_context(user)
-    return render_template("sessions.html", user=user, sessions=context["sessions"], skills=context["skills_catalog"])
+        flash(result["error"], "error")
+        return redirect("/skills")
+        
+    flash("Skill request sent! Mentors will see your suggested time.", "success")
+    return redirect("/skills")
 
 
 @exchange_bp.route("/sessions", methods=["POST"])
@@ -82,14 +80,15 @@ def create_session_route():
     user, resp = require_auth()
     if resp:
         return resp
-    payload = dict(request.form) or (request.get_json(silent=True) or {})
+    payload = dict(request.form)
     result = create_learning_session(user, payload)
+    
     if result.get("error"):
         flash(result["error"], "error")
-        return redirect("/sessions")
+        return redirect("/share-skill") if payload.get("request_id") else redirect("/sessions")
 
-    flash("Session created successfully.", "success")
-    return redirect("/sessions")
+    flash("Session scheduled successfully.", "success")
+    return redirect("/growth-hub")
 
 
 @exchange_bp.route("/sessions/<session_id>/join", methods=["POST"])
@@ -100,29 +99,10 @@ def join_session_route(session_id):
     result = join_learning_session(user, session_id)
     if result.get("error"):
         flash(result["error"], "error")
-    else:
-        flash("Session joined.", "success")
-    return redirect("/sessions")
-
-
-@exchange_bp.route("/sessions/complete", methods=["POST"])
-def complete_session_form_route():
-    user, resp = require_auth()
-    if resp:
-        return resp
-    session_id = request.form.get("session_id", "")
-    result = complete_learning_session(user, session_id)
-    if result.get("error"):
-        flash(result["error"], "error")
-        return redirect("/sessions")
-
-    # refresh user credits/profile from DB after transaction
-    refreshed = get_user_by_id(user.get("id"))
-    if refreshed:
-        session["user"] = refreshed
-
-    flash("Session completed and credits transferred.", "success")
-    return redirect("/transactions")
+        return redirect("/growth-hub")
+    
+    flash("You have joined the session.", "success")
+    return redirect("/growth-hub")
 
 
 @exchange_bp.route("/sessions/<session_id>/complete", methods=["POST"])
@@ -132,19 +112,16 @@ def complete_session_route(session_id):
         return resp
     result = complete_learning_session(user, session_id)
     if result.get("error"):
-        return jsonify(result), 400
+        flash(result["error"], "error")
+        return redirect("/growth-hub")
+    
+    # Refresh credits in session
     refreshed = get_user_by_id(user.get("id"))
     if refreshed:
         session["user"] = refreshed
-    return jsonify(result), 200
-
-
-@exchange_bp.route("/sessions/<session_id>/live")
-def live_session_page(session_id):
-    user, resp = require_auth()
-    if resp:
-        return resp
-    return render_template("live_session.html", user=user, session_id=session_id)
+        
+    flash("Session marked as completed.", "success")
+    return redirect("/growth-hub")
 
 
 @exchange_bp.route("/transactions")

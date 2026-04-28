@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="growth-page">
+  <div class="skills-header" style="margin-bottom: 3rem; text-align: center;">
+    <h1>Growth Hub</h1>
+    <p>Your complete history of skill exchanges and progress.</p>
+  </div>
+
+  <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h3>Available Credits</h3>
+        <p style="font-size: 2rem; font-weight: 800;">{{ user.credits or 0 }} ⭐</p>
+      </div>
+      <div style="text-align: right;">
+        <p>Total Exchanges: {{ sessions|length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-bottom: 1.5rem;">
+    <h3>Exchange History</h3>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+      <thead>
+        <tr style="background: var(--primary-light); color: var(--primary);">
+          <th style="padding: 1rem;">Skill</th>
+          <th style="padding: 1rem;">Role</th>
+          <th style="padding: 1rem;">Partner</th>
+          <th style="padding: 1rem;">Scheduled At</th>
+          <th style="padding: 1rem;">Status</th>
+          <th style="padding: 1rem;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr style="border-bottom: 1px solid var(--border-color);">
+          <td style="padding: 1rem; font-weight: 600;">{{ s.skill.name if s.skill else 'Untitled' }}</td>
+          <td style="padding: 1rem;">
+            <span class="proficiency-badge" style="background: {{ 'var(--success)' if s.trainer_id == user.id else 'var(--primary)' }}; color: white;">
+              {{ 'Trainer' if s.trainer_id == user.id else 'Learner' }}
+            </span>
+          </td>
+          <td style="padding: 1rem;">
+            {% if s.trainer_id == user.id %}
+              {{ s.learner.name if s.learner else 'Open' }}
+            {% else %}
+              {{ s.trainer.name if s.trainer else 'N/A' }}
+            {% endif %}
+          </td>
+          <td style="padding: 1rem; font-size: 0.9rem;">{{ s.scheduled_at }}</td>
+          <td style="padding: 1rem;">
+            <span style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: {{ 'var(--success)' if s.status == 'completed' else 'var(--accent)' }}">
+              {{ s.status }}
+            </span>
+          </td>
+          <td style="padding: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+            {% if s.meet_link and s.status != 'completed' %}
+              <a href="{{ s.meet_link }}" target="_blank" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Join Meet</a>
+            {% endif %}
+
+            {% if s.trainer_id == user.id and s.status != 'completed' %}
+              <form action="/sessions/{{ s.id }}/complete" method="POST" style="margin: 0;">
+                <button type="submit" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: var(--success); border: none;">End Session</button>
+              </form>
+            {% endif %}
+
+            {% if s.status == 'completed' %}
+              <span style="color: var(--success); font-size: 0.8rem; font-weight: 600;">Finished</span>
+            {% endif %}
+          </td>
+
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+            No exchanges recorded yet. Start learning or teaching today!
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

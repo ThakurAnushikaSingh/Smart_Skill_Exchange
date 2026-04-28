@@ -18,7 +18,7 @@ def skills():
 def add_skill():
     if "user" not in session:
         return redirect("/auth")
-        return redirect("/auth")
+
 
     if request.method == "POST":
         data = dict(request.form)
@@ -31,5 +31,6 @@ def add_skill():
         flash(f"{skill_name} added successfully.", "success")
         return render_template("skill_success.html", skill_name=skill_name)
 
-    return render_template("add_skill.html")
+    return render_template("add_skill.html", skills=fetch_skills())
+
 

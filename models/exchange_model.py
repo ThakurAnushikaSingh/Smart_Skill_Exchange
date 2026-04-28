@@ -61,14 +61,33 @@ def create_session(trainer_id, learner_id, skill_id, scheduled_at, required_cred
 
 
 def list_sessions_for_user(user_id):
-    return (
+    # Perform two separate queries because the current client version lacks the .or_() method
+    # Include trainer and learner info for the Growth Hub
+    select_query = "*, skill:skills(id,name), trainer:users!trainer_id(id,name), learner:users!learner_id(id,name)"
+    
+    trainer_res = (
         supabase.table(SESSIONS_TABLE)
-        .select("*, skill:skills(id,name)")
-        .or_(f"trainer_id.eq.{user_id},learner_id.eq.{user_id}")
+        .select(select_query)
+        .eq("trainer_id", user_id)
         .order("scheduled_at", desc=False)
         .execute()
-        .data
     )
+    learner_res = (
+        supabase.table(SESSIONS_TABLE)
+        .select(select_query)
+        .eq("learner_id", user_id)
+        .order("scheduled_at", desc=False)
+        .execute()
+    )
+    
+    # Combine results and remove duplicates
+    combined = trainer_res.data + learner_res.data
+    unique_sessions = {s["id"]: s for s in combined}.values()
+    
+    # Sort by scheduled_at
+    return sorted(unique_sessions, key=lambda x: x["scheduled_at"])
+
+
 
 
 def join_session(session_id, learner_id):
@@ -88,14 +107,29 @@ def complete_session_atomic(session_id, actor_id):
 
 
 def list_transactions(user_id):
-    return (
+    # Perform two separate queries because the current client version lacks the .or_() method
+    from_res = (
         supabase.table(TRANSACTIONS_TABLE)
         .select("*")
-        .or_(f"from_user_id.eq.{user_id},to_user_id.eq.{user_id}")
+        .eq("from_user_id", user_id)
         .order("created_at", desc=True)
         .execute()
-        .data
     )
+    to_res = (
+        supabase.table(TRANSACTIONS_TABLE)
+        .select("*")
+        .eq("to_user_id", user_id)
+        .order("created_at", desc=True)
+        .execute()
+    )
+    
+    # Combine results and remove duplicates
+    combined = from_res.data + to_res.data
+    unique_tx = {t["id"]: t for t in combined}.values()
+    
+    # Sort by created_at
+    return sorted(unique_tx, key=lambda x: x["created_at"], reverse=True)
+
 
 
 def list_certifications(user_id):
@@ -108,18 +142,44 @@ def list_certifications(user_id):
         .data
     )
 
+def add_certification(user_id, skill_id, role="trainer"):
+    payload = {"user_id": user_id, "skill_id": skill_id, "role": role}
+    return supabase.table(CERTIFICATIONS_TABLE).insert(payload).execute().data[0]
 
-def create_skill_request(requester_id, skill_id):
-    payload = {"requester_id": requester_id, "skill_id": skill_id, "status": "open"}
+def create_skill_request(requester_id, skill_id, suggested_time=None):
+    payload = {
+        "requester_id": requester_id,
+        "skill_id": skill_id,
+        "status": "open",
+        "suggested_time": suggested_time
+    }
     return supabase.table(SKILL_REQUESTS_TABLE).insert(payload).execute().data[0]
 
 
 def list_skill_requests(user_id):
     return (
         supabase.table(SKILL_REQUESTS_TABLE)
-        .select("*, skill:skills(id,name)")
+        .select("*, skill:skills(id,name), requester:users(id,name)")
         .eq("requester_id", user_id)
         .order("created_at", desc=True)
         .execute()
         .data
     )
+
+
+def list_requests_for_trainer(trainer_skill_ids):
+    if not trainer_skill_ids:
+        return []
+    
+    # Get all open requests for these skills
+    return (
+        supabase.table(SKILL_REQUESTS_TABLE)
+        .select("*, skill:skills(id,name), requester:users(id,name)")
+        .in_("skill_id", trainer_skill_ids)
+        .eq("status", "open")
+        .order("created_at", desc=True)
+        .execute()
+        .data
+    )
+
+

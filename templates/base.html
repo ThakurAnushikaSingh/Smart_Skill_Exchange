@@ -1,57 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Skill Exchange</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" type="image/x-icon">
 </head>
 <body>
-  <div class="navbar">
-  <div class="navbar">
-    <h3>Skill Exchange</h3>
+  <nav class="navbar">
+    <h3>SkillExchange</h3>
     <div class="navbar-links">
       {% if session.get('user') %}
-        <a href="/home" class="btn btn-outline">Home</a>
-        <a href="/skills" class="btn btn-outline">Skills</a>
-        <a href="/my-dashboard" class="btn btn-outline">Dashboard</a>
-        <a href="/sessions" class="btn btn-outline">Sessions</a>
-        <a href="/skill-requests" class="btn btn-outline">Requests</a>
-        <a href="/transactions" class="btn btn-outline">Transactions</a>
-        <a href="/certifications" class="btn btn-outline">Certifications</a>
-        <a href="/profile" class="btn btn-outline">Profile</a>
-        <a href="/logout" class="btn btn-secondary">Logout</a>
+        <a href="/home">Home</a>
+        <a href="/skills">Browse</a>
+        <a href="/my-dashboard">Dashboard</a>
+        <a href="/profile" class="btn btn-primary" style="padding: 0.5rem 1rem;">Profile</a>
+        <a href="/logout" style="color: var(--danger); margin-left: 10px;">Logout</a>
       {% else %}
-        <a href="/" class="btn btn-outline">Landing</a>
-        <a href="/auth" class="btn btn-primary">Login / Register</a>
-      {% endif %}
-    <div class="navbar-links">
-      {% if session.get('user') %}
-        <a href="/home" class="btn btn-outline">Home</a>
-        <a href="/skills" class="btn btn-outline">Skills</a>
-        <a href="/my-dashboard" class="btn btn-outline">Dashboard</a>
-        <a href="/sessions" class="btn btn-outline">Sessions</a>
-        <a href="/skill-requests" class="btn btn-outline">Requests</a>
-        <a href="/transactions" class="btn btn-outline">Transactions</a>
-        <a href="/certifications" class="btn btn-outline">Certifications</a>
-        <a href="/profile" class="btn btn-outline">Profile</a>
-        <a href="/logout" class="btn btn-secondary">Logout</a>
-      {% else %}
-        <a href="/" class="btn btn-outline">Landing</a>
-        <a href="/auth" class="btn btn-primary">Login / Register</a>
+        <a href="/">Landing</a>
+        <a href="/auth" class="btn btn-primary">Get Started</a>
       {% endif %}
     </div>
-  </div>
-  </div>
+  </nav>
 
   <div class="container">
     {% if request.path not in ['/', '/auth'] %}
-    <div class="back-row">
-      <button class="btn btn-outline" type="button" onclick="goBack()">← Back</button>
+    <div class="back-row" style="margin-bottom: 2rem;">
+      <button class="btn btn-secondary" type="button" onclick="goBack()" style="padding: 0.5rem 1rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back
+      </button>
     </div>
     {% endif %}
-
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -63,7 +44,9 @@
       {% endif %}
     {% endwith %}
 
-    {% block content %}{% endblock %}
+    <main>
+      {% block content %}{% endblock %}
+    </main>
   </div>
 
   <script>
@@ -74,18 +57,16 @@
         window.location.href = '/home';
       }
     }
-  </script>
-  </div>
-
-  <script>
-    function goBack() {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = '/home';
-      }
-    }
+    
+    // Auto-hide flash messages
+    setTimeout(() => {
+      const flashes = document.querySelectorAll('.flash');
+      flashes.forEach(f => {
+        f.style.opacity = '0';
+        f.style.transform = 'translateX(20px)';
+        setTimeout(() => f.remove(), 300);
+      });
+    }, 5000);
   </script>
 </body>
 </html>
-

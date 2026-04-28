@@ -1,37 +1,88 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="search-wrapper">
-  <div class="search-container">
-    <span class="search-icon">🔍</span>
-    <input type="text" class="search-bar" placeholder="Search skills...">
-  </div>
-</div>
 
 <div class="skills-page">
 
-  <div class="skills-header">
-    <h1>Explore Skills 🚀</h1>
-    <p>Find something new to learn or exchange</p>
+  <div class="skills-header" style="text-align: center; margin-bottom: 3rem;">
+    <h1>Explore the Skill Catalog</h1>
+    <p>Discover expert knowledge shared by our community.</p>
+    
+    <div class="search-wrapper" style="margin-top: 2rem;">
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-bar" placeholder="Filter by skill name..." onkeyup="filterSkills(this.value)">
+      </div>
+    </div>
   </div>
 
-  <div class="skills-grid">
+  <div class="skills-grid" id="skillsGrid">
     {% for skill in skills %}
-    <div class="skill-card">
-      
+    <div class="skill-card card">
       <div class="skill-content">
-        <h3>{{ skill.name }}</h3>
-        <p>{{ skill.description }}</p>
+        <h3 style="margin-bottom: 0.5rem; color: var(--primary);">{{ skill.name }}</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); min-height: 3rem;">{{ skill.description or "No description provided for this skill yet." }}</p>
       </div>
 
-      <div class="skill-footer">
-        <button type="button" class="btn btn-primary">Request Skill</button>
+      <div class="skill-footer" style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-primary" style="width: 100%;" onclick="openRequestModal('{{ skill.id }}', '{{ skill.name }}')">Request Skill</button>
       </div>
-
+    </div>
+    {% else %}
+    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+      <p>No skills found. Be the first to share one!</p>
+      <a href="/add-skill" class="btn btn-primary" style="margin-top: 1rem;">Add a Skill</a>
     </div>
     {% endfor %}
   </div>
 
 </div>
+
+<!-- Request Modal -->
+<div id="requestModal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+  <div class="card" style="width: 100%; max-width: 400px; padding: 2rem;">
+    <h3 id="modalTitle">Request Skill</h3>
+    <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Suggest a time for the trainer to review.</p>
+    
+    <form action="/skill-requests" method="POST">
+      <input type="hidden" id="modalSkillId" name="skill_id">
+      <div class="input-group">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">When would you like to learn?</label>
+        <input type="datetime-local" name="suggested_time" required style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      </div>
+      <div class="actions" style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Send Request</button>
+        <button type="button" class="btn btn-secondary" onclick="closeRequestModal()" style="flex: 1;">Cancel</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  function openRequestModal(id, name) {
+    document.getElementById('modalSkillId').value = id;
+    document.getElementById('modalTitle').innerText = 'Request ' + name;
+    document.getElementById('requestModal').classList.remove('hidden');
+  }
+  
+  function closeRequestModal() {
+    document.getElementById('requestModal').classList.add('hidden');
+  }
+
+  function filterSkills(query) {
+
+    const cards = document.querySelectorAll('.skill-card');
+    const q = query.toLowerCase();
+    
+    cards.forEach(card => {
+      const name = card.querySelector('h3').textContent.toLowerCase();
+      if (name.includes(q)) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 {% endblock %}

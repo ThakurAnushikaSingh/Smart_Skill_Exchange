@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="share-page">
+  <div class="skills-header" style="margin-bottom: 3rem;">
+    <h1>Share Your Skills</h1>
+    <p>Help others grow by teaching skills you've mastered.</p>
+  </div>
+
+  <div class="section-title" style="margin-bottom: 1.5rem;">
+    <h3>Open Requests for Your Skills</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">These learners are looking for mentors with your expertise.</p>
+  </div>
+
+  <div class="skills-grid">
+    {% for req in requests %}
+    <div class="skill-card card">
+      <div class="skill-content">
+        <h4 style="color: var(--primary);">{{ req.skill.name }}</h4>
+        <p style="margin-top: 0.5rem;"><strong>Requester:</strong> {{ req.requester.name }}</p>
+        <p><strong>Suggested Time:</strong> {{ req.suggested_time or 'Not specified' }}</p>
+
+      </div>
+
+      <div class="skill-footer" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <button class="btn btn-primary" style="width: 100%;" onclick="openApproveModal('{{ req.id }}', '{{ req.skill.name }}', '{{ req.requester.name }}')">Approve & Schedule</button>
+      </div>
+    </div>
+    {% else %}
+    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: var(--primary-light);">
+      <p>No active requests for your skills right now. Try adding more skills to your profile!</p>
+      <a href="/profile" class="btn btn-primary" style="margin-top: 1rem;">Update Profile</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Approve/Schedule Modal -->
+<div id="approveModal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+  <div class="card" style="width: 100%; max-width: 450px; padding: 2rem;">
+    <h3 id="approveTitle">Schedule Session</h3>
+    <p id="approveSub" style="margin-bottom: 1.5rem; color: var(--text-muted);"></p>
+    
+    <form action="/sessions" method="POST">
+      <input type="hidden" id="approveReqId" name="request_id">
+      <div class="input-group">
+        <label>Final Scheduled Date & Time</label>
+        <input type="datetime-local" name="scheduled_at" required>
+      </div>
+      <div class="input-group">
+        <label>Google Meet Link</label>
+        <input type="url" name="meet_link" placeholder="https://meet.google.com/..." required>
+      </div>
+      <div class="input-group">
+        <label>Message to Learner (Optional)</label>
+        <textarea name="trainer_notes" placeholder="Any preparation instructions?"></textarea>
+      </div>
+      <div class="actions" style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary">Confirm & Schedule</button>
+        <button type="button" class="btn btn-secondary" onclick="closeApproveModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openApproveModal(reqId, skillName, requesterName) {
+    document.getElementById('approveReqId').value = reqId;
+    document.getElementById('approveTitle').innerText = 'Schedule ' + skillName;
+    document.getElementById('approveSub').innerText = 'Teaching ' + requesterName;
+    document.getElementById('approveModal').classList.remove('hidden');
+  }
+  
+  function closeApproveModal() {
+    document.getElementById('approveModal').classList.add('hidden');
+  }
+</script>
+
+{% endblock %}

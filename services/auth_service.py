@@ -1,4 +1,6 @@
 from models.user_model import create_user, get_user_by_email, get_user_by_id_and_email
+from utils.auth_utils import hash_password, verify_password
+
 
 
 
@@ -24,7 +26,9 @@ def register_user(data):
         "dob": data.get("dob") or None,
         "gender": data.get("gender") or None,
         "bio": data.get("bio") or None,
+        "credits": 21,
     }
+
 
     created = create_user(payload)
     return {"success": True, "user": created}
