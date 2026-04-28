@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Skill Exchange</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='image.png') }}" type="image/x-icon">
 
 </head>
+
 <body>
   <nav class="navbar">
     <h3>SkillExchange</h3>
     <div class="navbar-links">
       {% if session.get('user') %}
-        <a href="/home">Home</a>
-        <a href="/skills">Browse</a>
-        <a href="/my-dashboard">Dashboard</a>
-        <a href="/profile" class="btn btn-primary" style="padding: 0.5rem 1rem;">Profile</a>
-        <a href="/logout" style="color: var(--danger); margin-left: 10px;">Logout</a>
+      <a href="/home">Home</a>
+      <a href="/skills">Browse</a>
+      <a href="/my-dashboard">Dashboard</a>
+      <a href="/profile" class="btn btn-primary" style="padding: 0.5rem 1rem;">Profile</a>
+      <a href="/logout" style="color: var(--danger); margin-left: 10px;">Logout</a>
       {% else %}
-        <a href="/">Landing</a>
-        <a href="/auth" class="btn btn-primary">Get Started</a>
+      <a href="/">Landing</a>
+      <a href="/auth" class="btn btn-primary">Get Started</a>
       {% endif %}
     </div>
   </nav>
@@ -29,20 +31,23 @@
     {% if request.path not in ['/', '/auth'] %}
     <div class="back-row" style="margin-bottom: 2rem;">
       <button class="btn btn-secondary" type="button" onclick="goBack()" style="padding: 0.5rem 1rem;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
         Back
       </button>
     </div>
     {% endif %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-stack">
-          {% for category, message in messages %}
-            <div class="flash flash-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
+    {% if messages %}
+    <div class="flash-stack">
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
 
     <main>
@@ -58,7 +63,7 @@
         window.location.href = '/home';
       }
     }
-    
+
     // Auto-hide flash messages
     setTimeout(() => {
       const flashes = document.querySelectorAll('.flash');
@@ -70,4 +75,5 @@
     }, 5000);
   </script>
 </body>
+
 </html>
