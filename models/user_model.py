@@ -1,11 +1,7 @@
 from config.supabase import supabase
 
 
-
 def create_user(data):
-    res = supabase.table("users").insert(data).execute()
-    return res.data[0] if res.data else None
-
     res = supabase.table("users").insert(data).execute()
     return res.data[0] if res.data else None
 
@@ -30,4 +26,3 @@ def get_user_by_id_and_email(user_id, email):
         .execute()
     )
     return res.data[0] if res.data else None
-
