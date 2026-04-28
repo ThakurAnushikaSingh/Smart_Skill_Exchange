@@ -5,6 +5,7 @@ from utils.auth_utils import hash_password, verify_password
 
 
 
+
 def register_user(data):
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip().lower()

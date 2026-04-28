@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
+<<<<<<< HEAD
 :root {
   /* Color Palette - Vibrant & Modern */
   --primary: #6366f1;
@@ -26,6 +27,12 @@
   --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+=======
+  --radius: 14px;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .hidden {
@@ -53,6 +60,7 @@ body {
   min-height: 100vh;
 }
 
+<<<<<<< HEAD
 /* Layer to make the gradient subtle */
 body::before {
   content: "";
@@ -69,6 +77,10 @@ body::before {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
+=======
+.container {
+  padding: 20px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 /* Navbar - Glassmorphism */
@@ -99,14 +111,22 @@ body::before {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+<<<<<<< HEAD
+=======
+  gap: 10px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .navbar a {
   text-decoration: none;
+<<<<<<< HEAD
   color: var(--text-main);
   font-weight: 500;
   font-size: 0.95rem;
   transition: var(--transition);
+=======
+  font-weight: 600;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .navbar a:hover {
@@ -118,6 +138,7 @@ body::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -126,12 +147,46 @@ body::before {
   transition: var(--transition);
   text-decoration: none;
   border: 1px solid transparent;
+=======
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover,
+button:hover,
+a.btn:hover,
+a.btn-primary:hover,
+a.btn-secondary:hover,
+a.btn-outline:hover {
+  transform: translateY(-1px);
+}
+
+.btn:focus,
+button:focus,
+a.btn:focus,
+a.btn-primary:focus,
+a.btn-secondary:focus,
+a.btn-outline:focus {
+  outline: 3px solid rgba(37, 99, 235, 0.25);
+  outline-offset: 2px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .btn-primary {
   background: var(--primary);
+<<<<<<< HEAD
   color: white;
   box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+=======
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .btn-primary:hover {
@@ -154,12 +209,20 @@ body::before {
 .btn-outline {
   background: transparent;
   color: var(--primary);
+<<<<<<< HEAD
   border: 2px solid var(--primary);
 }
 
 .btn-outline:hover {
   background: var(--primary);
   color: white;
+=======
+  border-color: var(--primary-soft);
+}
+
+.btn-outline:hover {
+  background: var(--primary-soft);
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 /* Cards */
@@ -179,11 +242,16 @@ body::before {
 
 /* Hero Section */
 .hero {
+<<<<<<< HEAD
   text-align: center;
   padding: 4rem 1rem;
+=======
+  min-height: calc(100vh - 90px);
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
   display: flex;
   flex-direction: column;
   align-items: center;
+<<<<<<< HEAD
 }
 
 .hero h1 {
@@ -199,10 +267,27 @@ body::before {
   color: var(--text-muted);
   max-width: 600px;
   margin-bottom: 2.5rem;
+=======
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.hero p {
+  color: var(--muted);
+  margin: 12px 0 24px;
+  max-width: 640px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 /* Forms */
 .auth-wrapper {
+<<<<<<< HEAD
+=======
+  min-height: calc(100vh - 90px);
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
   display: flex;
   justify-content: center;
   align-items: center;
@@ -211,6 +296,7 @@ body::before {
 
 .auth-card {
   width: 100%;
+<<<<<<< HEAD
   max-width: 450px;
   padding: 3rem;
 }
@@ -219,12 +305,24 @@ body::before {
   font-size: 2rem;
   margin-bottom: 0.5rem;
   color: var(--text-main);
+=======
+  max-width: 420px;
+  background: var(--white);
+  padding: 28px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-header {
+  margin-bottom: 16px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .input-group {
   margin-bottom: 1.5rem;
 }
 
+<<<<<<< HEAD
 .input-group label {
   display: block;
   font-size: 0.875rem;
@@ -233,6 +331,8 @@ body::before {
   color: var(--text-main);
 }
 
+=======
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 .input-group input,
 .input-group textarea,
 .input-group select {
@@ -246,6 +346,7 @@ body::before {
   background: #fdfdfd;
 }
 
+<<<<<<< HEAD
 .input-group input:focus,
 .input-group textarea:focus,
 .input-group select:focus {
@@ -253,6 +354,28 @@ body::before {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
   background: white;
+=======
+.hidden {
+  display: none;
+}
+
+.switch-text {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.switch-text span {
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboard {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 30px 10px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 /* Dashboard Styles */
@@ -284,21 +407,50 @@ body::before {
 
 .quick-grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+=======
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skills-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 10px;
+}
+
+.skills-header {
+  margin-bottom: 18px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 /* Skills Display */
 .skills-grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
+=======
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 }
 
 .skill-card {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 1rem;
   height: 100%;
 }
@@ -313,13 +465,131 @@ body::before {
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
+=======
+  justify-content: space-between;
+  min-height: 180px;
+}
+
+.skill-footer {
+  margin-top: 14px;
+}
+
+.search-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 620px;
+  position: relative;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 13px 16px 13px 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 640px;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+}
+
+.profile-header {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
   font-weight: 700;
   text-transform: uppercase;
   background: var(--primary-light);
   color: var(--primary);
 }
 
+<<<<<<< HEAD
 /* Flash Messages */
+=======
+.profile-section,
+.profile-details,
+.profile-actions {
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
+
+.back-row {
+  margin: 8px 0 12px;
+}
+
+.success-card {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.skills-chip-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.skill-chip {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fbff;
+}
+
+.skill-chip p {
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+
+>>>>>>> 26eef87ce471af82a0c8b5d4d6fbb30f3d918d72
 .flash-stack {
   position: fixed;
   top: 5rem;
