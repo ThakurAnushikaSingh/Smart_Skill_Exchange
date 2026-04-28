@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="skills-page">
+  <h1>Skill Requests</h1>
+  <div class="card" style="margin:16px 0;">
+    <h3>Request a Skill</h3>
+    <form method="POST" action="/skill-requests">
+      <div class="input-group">
+        <select name="skill_id" required>
+          <option value="" disabled selected>Select skill</option>
+          {% for item in skills %}
+          <option value="{{ item.id }}">{{ item.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">Create Request</button>
+    </form>
+  </div>
+
+  <div class="skills-grid">
+    {% for r in skill_requests %}
+    <div class="skill-card">
+      <h3>{{ r.skill.name if r.skill else r.skill_id }}</h3>
+      <p>Status: {{ r.status }}</p>
+      <p>Requested by: {{ r.requester_id }}</p>
+      <p>{{ r.created_at }}</p>
+    </div>
+    {% else %}
+    <p class="switch-text">No skill requests yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
